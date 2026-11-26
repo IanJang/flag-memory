@@ -26,7 +26,8 @@ LAYOUT: 제목과 점수 스티커, 설정 줄, 보드, 찾은 나라, 랭킹; 6
 --ol:3px 0 var(--ink),-3px 0 var(--ink),0 3px var(--ink),0 -3px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);
 --ol2:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink)}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;color:var(--ink);font:16px/1.5 "Gowun Dodum",system-ui,sans-serif;min-height:100vh;overflow-x:clip;
+html{touch-action:manipulation;overscroll-behavior:none;-webkit-text-size-adjust:100%}
+body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;margin:0;color:var(--ink);font:16px/1.5 "Gowun Dodum",system-ui,sans-serif;min-height:100vh;overflow-x:clip;
   background:radial-gradient(circle,rgba(255,255,255,.55) 1.6px,transparent 2.2px) 0 0/22px 22px fixed,linear-gradient(180deg,var(--sky1),var(--sky2) 75%) fixed}
 .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
 .clouds svg{position:absolute;height:auto}
@@ -94,8 +95,9 @@ select option{color:#000}
 .btn:active,.seg button:active,select:active,.snd:active{transform:translateY(2px)}
 .btn:active{box-shadow:0 2px 0 var(--ink)}
 .seg button:focus-visible,.btn:focus-visible,.card:focus-visible,select:focus-visible,.snd:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
-.board{margin:0 auto;display:grid;gap:clamp(8px,1.3vw,14px);grid-template-columns:repeat(var(--cols),minmax(0,1fr));perspective:900px;padding-bottom:6px}
-.card{position:relative;aspect-ratio:4/5;font-size:inherit;color:inherit;border:0;padding:0;background:none;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.board{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;margin:0 auto;display:grid;gap:clamp(8px,1.3vw,14px);grid-template-columns:repeat(var(--cols),minmax(0,1fr));perspective:900px;padding-bottom:6px}
+body.playing .board{touch-action:none}
+.card{-webkit-touch-callout:none;position:relative;aspect-ratio:4/5;font-size:inherit;color:inherit;border:0;padding:0;background:none;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
 .card.up,.card.done{transform:rotateY(180deg)}
 .face{position:absolute;inset:0;border-radius:max(10px,.95em);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden;border:max(2px,.19em) solid var(--ink);box-shadow:0 max(3px,.3em) 0 var(--ink)}
 .back{background:radial-gradient(circle,var(--dot) 1.5px,transparent 2px) 0 0/11px 11px,var(--bk);transition:transform .15s}
@@ -463,21 +465,21 @@ function showCombo(c){
 function setSeg(id,val){for(const b of $(id).querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.v===String(val)))}
 function layout(){
   const b=$("board"),n=cards.length;if(!n)return;
-  const W=b.parentElement.clientWidth,Hh=Math.max(innerHeight-40,360),gap=parseFloat(getComputedStyle(b).columnGap)||8;
-  // 가로 폭을 꽉 채우고, 그 안에서 카드가 가장 크게 나오면서 한 화면에 들어오는 열 수를 고름
-  let pick=null,fallback=null;
+  const W=b.parentElement.clientWidth,gap=parseFloat(getComputedStyle(b).columnGap)||8;
+  // 보드가 스크롤 없이 한 화면에 들어오도록: 보드 위쪽(제목·점수판)을 뺀 남은 높이 안에서 카드가 가장 크게 나오는 열 수를 고름
+  const top=b.getBoundingClientRect().top+scrollY,Hh=Math.max(innerHeight-top-18,260);
+  let best=null;
   for(let c=3;c<=14;c++){const rows=Math.ceil(n/c),waste=rows*c-n;if(waste>Math.floor(c/3))continue;
-    const w=(W-gap*(c-1))/c,tot=rows*w*1.25+gap*(rows-1);
-    if(w>230)continue;
-    if(tot<=Hh&&!pick)pick={c,w};
-    if(!fallback||tot<fallback.tot)fallback={c,w,tot}}
-  const best=pick||fallback||{c:4,w:(W-gap*3)/4};
-  b.style.setProperty("--cols",best.c);b.style.maxWidth="";
+    const ww=(W-gap*(c-1))/c,wh=(Hh-gap*(rows-1))/(rows*1.25),w=Math.min(ww,wh,230);
+    if(!best||w>best.w+.5)best={c,w}}
+  b.style.setProperty("--cols",best.c);
+  b.style.maxWidth=Math.ceil(best.w*best.c+gap*(best.c-1))+"px";
   b.style.fontSize=Math.max(.62,Math.min(1.3,best.w/110))+"em";
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 function newGame(){
+  document.body.classList.add("playing");if(scrollY>0)scrollTo({top:0,behavior:"smooth"});
   clearInterval(timer);timer=null;started=false;secs=0;moves=0;matched=0;open=[];lock=false;foundList=[];combo=0;bestCombo=0;
   let pool=C.filter(c=>region==="all"||c[2]===region);
   const n=Math.min(size,pool.length);
@@ -530,7 +532,7 @@ function flip(el){
   update();
 }
 function win(){
-  clearInterval(timer);
+  clearInterval(timer);document.body.classList.remove("playing");
   setTimeout(()=>{sfx.win();const r=$("board").getBoundingClientRect();for(let i=0;i<5;i++)setTimeout(()=>burst({getBoundingClientRect:()=>({left:r.left+Math.random()*r.width,top:r.top+Math.random()*r.height*.6,width:0,height:0})},26,["#ffd23f","#ff6b6b","#7ee0bd","#4cc9f0","#8b6cff","#fff"]),i*160)},300);
   const key=curKey(),rec={k:key,m:moves,s:secs,c:bestCombo,t:Date.now()};
   const mine=localTop(key);const best=mine[0]?{moves:mine[0].m,secs:mine[0].s}:null;
@@ -546,7 +548,13 @@ function win(){
   setTimeout(()=>{$("overlay").classList.add("show");$("again").focus()},500);
 }
 
-$("board").addEventListener("click",e=>{const c=e.target.closest(".card");if(c)flip(c)});
+// 터치: 손가락이 조금 미끄러져도 같은 카드 위에서 떼면 뒤집기. 터치 뒤 따라오는 click은 무시
+let tDown=null,tUsed=0;
+$("board").addEventListener("pointerdown",e=>{if(e.pointerType==="mouse")return;tDown=e.target.closest(".card")});
+$("board").addEventListener("pointerup",e=>{if(e.pointerType==="mouse"||!tDown)return;const c=document.elementFromPoint(e.clientX,e.clientY)?.closest(".card");if(c===tDown){tUsed=Date.now();flip(c)}tDown=null});
+$("board").addEventListener("pointercancel",()=>{tDown=null});
+$("board").addEventListener("click",e=>{if(Date.now()-tUsed<700)return;const c=e.target.closest(".card");if(c)flip(c)});
+$("board").addEventListener("contextmenu",e=>e.preventDefault());
 $("modeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.v;setSeg("modeSeg",mode);newGame()});
 $("sizeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;size=+b.dataset.v;setSeg("sizeSeg",size);newGame()});
 $("region").addEventListener("change",e=>{region=e.target.value;newGame()});
