@@ -1,5 +1,5 @@
 // 오프라인 실행을 위한 캐시. 게임을 고치면 VERSION 숫자를 올려 주세요.
-const VERSION = "v2";
+const VERSION = "v3";
 const CACHE = "flag-memory-" + VERSION;
 const FILES = ["./", "index.html", "flags.js", "manifest.webmanifest",
   "icons/icon-192.png", "icons/icon-512.png", "icons/apple-touch-icon.png"];

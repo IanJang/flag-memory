@@ -29,7 +29,7 @@ LAYOUT: 작은 제목과 설정줄, 그 아래 보드, 하단 상태줄; 600px �
 :root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
 *{box-sizing:border-box;min-width:0}
 body{margin:0;background:radial-gradient(120% 80% at 80% 0%,var(--bg) 0%,var(--bg2) 100%) fixed;color:var(--ink);font:16px/1.55 "Gowun Dodum",system-ui,sans-serif;overflow-x:clip;min-height:100vh}
-.wrap{max-width:1360px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,14px) 40px}
+.wrap{max-width:1600px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,14px) 40px}
 header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px 20px;margin-bottom:16px}
 h1{font:400 clamp(32px,6vw,48px)/1.05 "Do Hyeon",sans-serif;margin:0;text-wrap:balance}
 h1 span{color:var(--sun)}
@@ -326,14 +326,17 @@ function showCombo(c){
 function setSeg(id,val){for(const b of $(id).querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.v===String(val)))}
 function layout(){
   const b=$("board"),n=cards.length;if(!n)return;
-  const W=b.parentElement.clientWidth,Hh=Math.max(innerHeight-24,360),gap=parseFloat(getComputedStyle(b).columnGap)||8;
-  let best=null;
-  for(let c=3;c<=12;c++){const rows=Math.ceil(n/c),waste=rows*c-n;if(waste>c/2)continue;
-    const s=Math.min((W-gap*(c-1))/c,(Hh-gap*(rows-1))/rows/1.25);
-    const score=s-waste*4;if(!best||score>best.score)best={c,s,score}}
-  const s=Math.min(best.s,220);
-  b.style.setProperty("--cols",best.c);b.style.maxWidth=Math.ceil(best.c*s+gap*(best.c-1))+"px";
-  b.style.fontSize=Math.max(.62,Math.min(1.25,s/110))+"em";
+  const W=b.parentElement.clientWidth,Hh=Math.max(innerHeight-40,360),gap=parseFloat(getComputedStyle(b).columnGap)||8;
+  // 가로 폭을 꽉 채우고, 그 안에서 카드가 가장 크게 나오면서 한 화면에 들어오는 열 수를 고름
+  let pick=null,fallback=null;
+  for(let c=3;c<=14;c++){const rows=Math.ceil(n/c),waste=rows*c-n;if(waste>Math.floor(c/3))continue;
+    const w=(W-gap*(c-1))/c,tot=rows*w*1.25+gap*(rows-1);
+    if(w>230)continue;
+    if(tot<=Hh&&!pick)pick={c,w};
+    if(!fallback||tot<fallback.tot)fallback={c,w,tot}}
+  const best=pick||fallback||{c:4,w:(W-gap*3)/4};
+  b.style.setProperty("--cols",best.c);b.style.maxWidth="";
+  b.style.fontSize=Math.max(.62,Math.min(1.3,best.w/110))+"em";
 }
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
