@@ -432,7 +432,11 @@ let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(layout,150)
 setSeg("modeSeg",mode);setSeg("sizeSeg",size);$("region").value=region;
 newGame();
 initShared();
-if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+if("serviceWorker" in navigator){
+  const had=!!navigator.serviceWorker.controller;let reloaded=false;
+  navigator.serviceWorker.addEventListener("controllerchange",()=>{if(had&&!reloaded){reloaded=true;location.reload()}});
+  navigator.serviceWorker.register("sw.js",{updateViaCache:"none"}).then(r=>r.update()).catch(()=>{});
+}
 }
 </script>
 </body>
