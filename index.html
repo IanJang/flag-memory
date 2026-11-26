@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>세계 국기 메모리</title>
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#0a4a63">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="국기 메모리">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&display=swap">
+<style>
+/*
+VOICE: 밝고 경쾌한 퀴즈 게임, 아이와 어른 모두
+IDEA: 바다 위에 펼친 지도책 — 카드 뒷면은 경위선 지구본, 앞면은 펄럭이는 국기
+PICTURE: 게임 보드 자체가 화면의 주인공
+COLOUR and TYPE: 깊은 바다색 바탕, 흰 카드, 해 노랑 보조, 산호색 강조 / Do Hyeon + Gowun Dodum
+LAYOUT: 작은 제목과 설정줄, 그 아래 보드, 하단 상태줄; 600px 이하에서 한 열
+*/
+:root{color-scheme:light dark;
+--bg:light-dark(#0e5b78,#062a3a);--bg2:light-dark(#0a4a63,#041f2b);
+--ink:#f4fbff;--card:light-dark(#ffffff,#eaf4f8);--cardink:#0b2f3e;
+--sun:#ffd23f;--coral:#ff5a4e;--muted:light-dark(#bfe1ee,#8fb7c7)}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0}
+body{margin:0;background:radial-gradient(120% 80% at 80% 0%,var(--bg) 0%,var(--bg2) 100%) fixed;color:var(--ink);font:16px/1.55 "Gowun Dodum",system-ui,sans-serif;overflow-x:clip;min-height:100vh}
+.wrap{max-width:1360px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,14px) 40px}
+header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px 20px;margin-bottom:16px}
+h1{font:400 clamp(32px,6vw,48px)/1.05 "Do Hyeon",sans-serif;margin:0;text-wrap:balance}
+h1 span{color:var(--sun)}
+.sub{margin:4px 0 0;color:var(--muted)}
+.stats{display:flex;gap:8px}
+.stat{background:rgba(255,255,255,.1);border-radius:14px;padding:6px 14px;text-align:center;min-width:76px}
+.stat b{display:block;font:400 24px/1.1 "Do Hyeon",sans-serif;white-space:nowrap}
+.stat small{font-size:13px;color:var(--muted)}
+.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:18px}
+.seg{display:flex;flex-wrap:wrap;background:rgba(0,0,0,.18);border-radius:999px;padding:4px;gap:2px}
+.seg button{border:0;background:none;color:var(--ink);font:inherit;font-size:15px;min-height:40px;padding:0 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--sun);color:#3a2a00;font-weight:700}
+.seg button:focus-visible,.btn:focus-visible,.card:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+select{font:inherit;font-size:16px;min-height:44px;border-radius:999px;border:0;padding:0 14px;background:rgba(0,0,0,.18);color:var(--ink)}
+select option{color:#000}
+.btn{border:0;font:400 18px "Do Hyeon",sans-serif;min-height:44px;padding:0 22px;border-radius:999px;background:var(--coral);color:#fff;cursor:pointer;box-shadow:0 4px 0 #b8362d}
+.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #b8362d}
+.board{margin:0 auto;display:grid;gap:clamp(6px,1.2vw,12px);grid-template-columns:repeat(var(--cols),minmax(0,1fr));perspective:900px}
+.card{position:relative;aspect-ratio:4/5;font-size:inherit;color:inherit;border:0;padding:0;background:none;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
+.card.up,.card.done{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden}
+.back{background:linear-gradient(160deg,#ffde5c,#ffb72b);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 6px 14px rgba(0,0,0,.25)}
+.back svg{width:62%;height:auto;opacity:.9}
+.front{transform:rotateY(180deg);background:var(--card);color:var(--cardink);box-shadow:0 6px 14px rgba(0,0,0,.25);padding:6px}
+.front.fc{justify-content:space-between;gap:0;padding:0}
+.flagbox{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:8% 7%}
+.fl{display:block;width:100%;line-height:0}
+.fl{display:flex;justify-content:center}
+.fl svg[style*="32/32"]{width:72%!important}.fl svg[style*="15/13"]{width:88%!important}
+.fl svg{display:block;width:100%;height:auto;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.1),0 3px 8px rgba(0,0,0,.18)}
+.cname{width:100%;background:#eef5f8;border-top:1px solid #d6e6ed;padding:.4em .25em .45em;font:400 max(10px,1em)/1.15 "Do Hyeon",sans-serif;text-align:center;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.02em;color:var(--cardink)}
+.card.done .cname{background:#c9f2d4;border-color:#9fe2b3}
+.chip .fl{display:inline-block;width:24px;vertical-align:-3px;margin-right:4px}
+.chip .fl svg{box-shadow:0 0 0 1px rgba(0,0,0,.15)}
+.name{padding:0 .2em;font:400 max(13px,1.15em)/1.15 "Do Hyeon",sans-serif;text-align:center;word-break:keep-all}
+.tag{font-size:max(11px,.75em);color:#4d7486;text-align:center;line-height:1.2}
+.card.done .front{background:#e6fbe9;box-shadow:0 0 0 3px #3ccf6e,0 6px 14px rgba(0,0,0,.25)}
+.card.done{cursor:default}
+.card.shake .front{animation:shake .4s}
+@keyframes shake{25%{transform:rotateY(180deg) translateX(-5px)}75%{transform:rotateY(180deg) translateX(5px)}}
+.found{margin-top:22px}
+.found h2{font:400 22px "Do Hyeon",sans-serif;margin:0 0 8px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{background:rgba(255,255,255,.12);border-radius:999px;padding:4px 12px;font-size:14px;white-space:nowrap}
+.empty{color:var(--muted);font-size:14px}
+.overlay{position:fixed;inset:0;background:rgba(3,20,28,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:5}
+.overlay.show{display:flex}
+.dialog{background:var(--card);color:var(--cardink);border-radius:22px;padding:28px 26px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
+.dialog h2{font:400 36px/1.1 "Do Hyeon",sans-serif;margin:0 0 6px}
+.dialog p{margin:6px 0}
+.dialog .big{font:400 22px "Do Hyeon",sans-serif;color:#0e5b78}
+.dialog .rec{color:var(--coral);font-weight:700}
+.dialog .btn{margin-top:14px}
+.rank{margin-top:26px;background:rgba(0,0,0,.16);border-radius:18px;padding:16px clamp(12px,2.5vw,22px) 12px}
+.rank-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:8px}
+.rank h2{font:400 24px "Do Hyeon",sans-serif;margin:0}
+.rank .cur{color:var(--muted);font-size:14px;margin:0 0 8px}
+.rank ol{list-style:none;margin:0;padding:0}
+.rank li{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto auto;gap:10px;align-items:center;padding:9px 4px;border-top:1px solid rgba(255,255,255,.1);font-size:15px}
+.rank li:first-child{border-top:0}
+.rank li.me{background:rgba(255,210,63,.14);border-radius:10px}
+.rank .no{font:400 20px "Do Hyeon",sans-serif;text-align:center;color:var(--muted)}
+.rank li:nth-child(1) .no{color:#ffd23f}.rank li:nth-child(2) .no{color:#dfe7ec}.rank li:nth-child(3) .no{color:#f0a868}
+.rank .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank .who small{color:var(--muted);font-size:13px;margin-left:6px}
+.rank .v{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.rank .v small{color:var(--muted);font-size:13px;margin-left:2px}
+.rank .empty{padding:10px 4px}
+.rank .msg{font-size:13px;color:var(--muted);margin:8px 4px 0}
+.dialog .reg{display:flex;gap:8px;margin-top:14px}
+.dialog .reg input{flex:1;font:inherit;font-size:16px;min-height:44px;border-radius:12px;border:2px solid #cfe0e7;padding:0 12px;color:var(--cardink);background:#fff}
+.dialog .reg input:focus-visible{outline:3px solid #0e5b78;outline-offset:1px}
+.dialog .reg button{border:0;border-radius:12px;min-height:44px;padding:0 14px;font:400 17px "Do Hyeon",sans-serif;background:#0e5b78;color:#fff;cursor:pointer;white-space:nowrap}
+.dialog .reg button:disabled{opacity:.5;cursor:default}
+.dialog .regmsg{font-size:14px;min-height:1.4em;color:#0e5b78}
+@media(max-width:600px){.rank li{grid-template-columns:28px minmax(0,1fr) auto auto;gap:8px}.rank .v.c{display:none}}
+.note{margin-top:18px;font-size:13px;color:var(--muted)}
+.stat.hot{background:linear-gradient(160deg,#ff8a3d,#ff3d5a);box-shadow:0 0 18px rgba(255,90,60,.6)}
+.stat.bump{animation:bump .35s}
+@keyframes bump{40%{transform:scale(1.18)}}
+.snd{display:inline-flex;align-items:center;gap:6px;border:0;font:inherit;font-size:15px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(0,0,0,.18);color:var(--ink);cursor:pointer}
+.snd svg{width:20px;height:20px}
+.snd[aria-pressed=false] .on,.snd[aria-pressed=true] .off{display:none}
+.snd:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
+.stage{position:relative}
+.combo{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);pointer-events:none;z-index:4;text-align:center;white-space:nowrap;font:400 clamp(40px,11vw,84px)/1 "Do Hyeon",sans-serif;color:#fff;-webkit-text-stroke:2px rgba(120,20,0,.35);text-shadow:0 4px 0 #ff5a4e,0 8px 24px rgba(0,0,0,.45);opacity:0}
+.combo small{display:block;font-size:.36em;color:var(--sun);text-shadow:0 2px 0 rgba(0,0,0,.35);-webkit-text-stroke:0;margin-top:6px}
+.combo.go{animation:combo 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes combo{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(3deg)}45%{transform:translate(-50%,-50%) scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
+.card.pop{animation:pop .5s ease-out}
+@keyframes pop{0%{transform:rotateY(180deg) scale(1)}35%{transform:rotateY(180deg) scale(1.12)}100%{transform:rotateY(180deg) scale(1)}}
+.card.fire .front{box-shadow:0 0 0 3px #ffb02e,0 0 22px 4px rgba(255,120,40,.75)}
+.fx{position:fixed;inset:0;pointer-events:none;z-index:6;overflow:hidden}
+.fx i{position:absolute;width:10px;height:10px;border-radius:2px;will-change:transform,opacity}
+body.shakeall .board{animation:quake .35s}
+@keyframes quake{20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
+@media(max-width:600px){header{align-items:start}.stats{width:100%}.stat{flex:1}.controls{gap:8px}.seg button{padding:0 10px;font-size:14px}.face{border-radius:10px}.tag{display:none}}
+@media(prefers-reduced-motion:reduce){.card{transition:none}.card.shake .front,.card.pop,.stat.bump,body.shakeall .board{animation:none}.combo.go{animation:fade 1.1s forwards}@keyframes fade{0%,80%{opacity:1}100%{opacity:0}}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div>
+      <h1>세계 국기 <span>메모리</span></h1>
+      <p class="sub">카드를 두 장씩 뒤집어 같은 짝을 찾아보세요.</p>
+    </div>
+    <div class="stats">
+      <div class="stat"><b id="moves">0</b><small>시도</small></div>
+      <div class="stat"><b id="time">0:00</b><small>시간</small></div>
+      <div class="stat"><b id="pairs">0/0</b><small>짝</small></div>
+      <div class="stat" id="comboStat"><b id="combo">0</b><small>연속</small></div>
+    </div>
+  </header>
+
+  <div class="controls">
+    <div class="seg" id="modeSeg" role="group" aria-label="모드">
+      <button data-v="flag" aria-pressed="true">국기 ↔ 국기</button>
+      <button data-v="name" aria-pressed="false">국기 ↔ 나라 이름</button>
+    </div>
+    <div class="seg" id="sizeSeg" role="group" aria-label="난이도">
+      <button data-v="6" aria-pressed="false">쉬움</button>
+      <button data-v="8" aria-pressed="true">보통</button>
+      <button data-v="12" aria-pressed="false">어려움</button>
+      <button data-v="18" aria-pressed="false">달인</button>
+    </div>
+    <select id="region" aria-label="지역">
+      <option value="all">전 세계</option>
+      <option value="as">아시아</option>
+      <option value="eu">유럽</option>
+      <option value="am">아메리카</option>
+      <option value="af">아프리카·중동</option>
+      <option value="oc">오세아니아·섬나라</option>
+    </select>
+    <button class="snd" id="snd" aria-pressed="true" aria-label="효과음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M17 9l5 6M22 9l-5 6"/></svg><span class="on">소리 켬</span><span class="off">소리 끔</span></button>
+    <button class="btn" id="newGame">새 게임</button>
+  </div>
+
+  <div class="stage">
+    <div class="board" id="board" aria-label="게임 보드"></div>
+    <div class="combo" id="comboPop" aria-live="polite"></div>
+  </div>
+
+  <section class="found">
+    <h2>이번 판에 찾은 나라</h2>
+    <div class="chips" id="found"><span class="empty">아직 없어요. 첫 짝을 찾아보세요!</span></div>
+  </section>
+
+  <section class="rank" aria-labelledby="rankTitle">
+    <div class="rank-head">
+      <h2 id="rankTitle">랭킹</h2>
+      <div class="seg" id="rankSeg" role="group" aria-label="랭킹 보기">
+        <button data-v="all" aria-pressed="false" hidden>모두의 랭킹</button>
+        <button data-v="me" aria-pressed="true">내 기록</button>
+      </div>
+    </div>
+    <p class="cur" id="rankCur"></p>
+    <ol id="rankList"></ol>
+    <p class="msg" id="rankMsg"></p>
+  </section>
+  
+</div>
+
+<div class="fx" id="fx"></div>
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
+  <div class="dialog">
+    <h2 id="winTitle">완성! 🎉</h2>
+    <p class="big" id="winStats"></p>
+    <p id="winRec"></p>
+    <div id="regBox" hidden>
+      <form class="reg" id="regForm"><input id="nick" maxlength="16" placeholder="랭킹에 올릴 이름" aria-label="랭킹에 올릴 이름" autocomplete="nickname"><button id="regBtn" type="submit">등록</button></form>
+      <p class="regmsg" id="regMsg"></p>
+    </div>
+    <button class="btn" id="again">한 판 더</button>
+  </div>
+</div>
+
+<script src="flags.js"></script>
+<script>
+{
+const C=[
+["KR","대한민국","as","서울"],["JP","일본","as","도쿄"],["CN","중국","as","베이징"],["IN","인도","as","뉴델리"],["VN","베트남","as","하노이"],["TH","태국","as","방콕"],["ID","인도네시아","as","자카르타"],["PH","필리핀","as","마닐라"],["MY","말레이시아","as","쿠알라룸푸르"],["SG","싱가포르","as","싱가포르"],["BD","방글라데시","as","다카"],["PK","파키스탄","as","이슬라마바드"],["LA","라오스","as","비엔티안"],["MM","미얀마","as","네피도"],
+["GB","영국","eu","런던"],["FR","프랑스","eu","파리"],["DE","독일","eu","베를린"],["IT","이탈리아","eu","로마"],["ES","스페인","eu","마드리드"],["NL","네덜란드","eu","암스테르담"],["BE","벨기에","eu","브뤼셀"],["CH","스위스","eu","베른"],["SE","스웨덴","eu","스톡홀름"],["NO","노르웨이","eu","오슬로"],["FI","핀란드","eu","헬싱키"],["DK","덴마크","eu","코펜하겐"],["IS","아이슬란드","eu","레이캬비크"],["PL","폴란드","eu","바르샤바"],["GR","그리스","eu","아테네"],["IE","아일랜드","eu","더블린"],["AT","오스트리아","eu","빈"],["UA","우크라이나","eu","키이우"],["CZ","체코","eu","프라하"],["RU","러시아","eu","모스크바"],["HU","헝가리","eu","부다페스트"],["RO","루마니아","eu","부쿠레슈티"],["BG","불가리아","eu","소피아"],["EE","에스토니아","eu","탈린"],["LT","리투아니아","eu","빌뉴스"],["LV","라트비아","eu","리가"],["MT","몰타","eu","발레타"],["TR","튀르키예","eu","앙카라"],
+["US","미국","am","워싱턴 D.C."],["CA","캐나다","am","오타와"],["BR","브라질","am","브라질리아"],["AR","아르헨티나","am","부에노스아이레스"],["CL","칠레","am","산티아고"],["CO","콜롬비아","am","보고타"],["PE","페루","am","리마"],["CU","쿠바","am","아바나"],["JM","자메이카","am","킹스턴"],["UY","우루과이","am","몬테비데오"],["VE","베네수엘라","am","카라카스"],["PA","파나마","am","파나마시티"],["BS","바하마","am","나소"],
+["ZA","남아프리카공화국","af","프리토리아"],["NG","나이지리아","af","아부자"],["GH","가나","af","아크라"],["SN","세네갈","af","다카르"],["CI","코트디부아르","af","야무수크로"],["ML","말리","af","바마코"],["CM","카메룬","af","야운데"],["BW","보츠와나","af","가보로네"],["DZ","알제리","af","알제"],["TN","튀니지","af","튀니스"],["MA","모로코","af","라바트"],["ET","에티오피아","af","아디스아바바"],["TZ","탄자니아","af","도도마"],["SO","소말리아","af","모가디슈"],["AE","아랍에미리트","af","아부다비"],["QA","카타르","af","도하"],["BH","바레인","af","마나마"],["KW","쿠웨이트","af","쿠웨이트시티"],["JO","요르단","af","암만"],
+["AU","호주","oc","캔버라"],["NZ","뉴질랜드","oc","웰링턴"],["WS","사모아","oc","아피아"],["TO","통가","oc","누쿠알로파"],["PW","팔라우","oc","응게룰무드"],["NR","나우루","oc","야렌"],["SB","솔로몬제도","oc","호니아라"],["MV","몰디브","oc","말레"],["FM","미크로네시아","oc","팔리키르"],["SC","세이셸","oc","빅토리아"],["MU","모리셔스","oc","포트루이스"],["TT","트리니다드 토바고","oc","포트오브스페인"]
+];
+const flag=c=>`<span class="fl">${flagSVG(c)}</span>`;
+const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const $=id=>document.getElementById(id);
+const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const globe='<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="#0e5b78"/><g fill="none" stroke="#ffe680" stroke-width="2.4"><ellipse cx="50" cy="50" rx="18" ry="44"/><ellipse cx="50" cy="50" rx="34" ry="44"/><line x1="50" y1="6" x2="50" y2="94"/><path d="M8 36h84M6 50h88M8 64h84"/></g><path d="M30 28c8-4 16 0 14 8s-12 4-16 10-8-12 2-18zM58 56c10-2 20 4 16 12s-14 8-18 2 0-12 2-14z" fill="#3ccf6e"/><circle cx="50" cy="50" r="44" fill="none" stroke="#fff" stroke-width="3"/></svg>';
+
+const saved=store.get("flagmem-settings")||{};
+let mode=saved.mode||"flag",size=saved.size||8,region=saved.region||"all";
+let cards=[],open=[],lock=false,moves=0,matched=0,secs=0,timer=null,started=false,foundList=[],combo=0,bestCombo=0;
+const reduce=matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/* ---- 랭킹 ---- */
+let lastRec=null,rankView=store.get("flagmem-rankview")||"me";
+const shared={ok:false,db:null,uid:null,docs:[],loaded:false,err:""};
+const better=(a,b)=>a.m-b.m||a.s-b.s||b.c-a.c;
+const curKey=()=>mode+"-"+size+"-"+region;
+const localTop=k=>(store.get("flagmem-history")||[]).filter(r=>r.k===k).sort(better).slice(0,10);
+const regionName={all:"전 세계",as:"아시아",eu:"유럽",am:"아메리카",af:"아프리카·중동",oc:"오세아니아·섬나라"};
+const sizeName={6:"쉬움",8:"보통",12:"어려움",18:"달인"};
+const dstr=t=>{const d=new Date(t);return (d.getMonth()+1)+"/"+d.getDate()};
+function sharedTop(k){
+  const rows=[];for(const d of shared.docs){const b=d.data()||{},r=b.recs&&b.recs[k];if(r&&typeof r.m==="number")rows.push({id:d.id,nick:String(b.nick||"이름 없음").slice(0,16),m:r.m,s:r.s|0,c:r.c|0,t:r.t||0})}
+  return rows.sort(better).slice(0,10);
+}
+function renderRank(){
+  const k=curKey();$("rankCur").textContent=`${sizeName[size]} · ${mode==="flag"?"국기 ↔ 국기":"국기 ↔ 나라 이름"} · ${regionName[region]} — 시도가 적을수록, 같으면 시간이 짧을수록 높아요.`;
+  for(const b of $("rankSeg").querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.v===rankView));
+  const all=rankView==="all"&&shared.ok;let rows,msg="";
+  if(all){rows=sharedTop(k);if(!shared.loaded)msg=shared.err||"랭킹을 불러오는 중…"}else rows=localTop(k);
+  $("rankList").innerHTML=rows.length?rows.map((r,i)=>{
+    const me=all?r.id===shared.uid:(lastRec&&r.t===lastRec.t);
+    const who=all?`${esc(r.nick)}${r.id===shared.uid?"<small>나</small>":""}`:`${dstr(r.t)}<small>${new Date(r.t).toTimeString().slice(0,5)}</small>`;
+    return `<li class="${me?"me":""}"><span class="no">${i+1}</span><span class="who">${who}</span><span class="v">${r.m}<small>번</small></span><span class="v">${fmt(r.s)}</span><span class="v c">${r.c}<small>연속</small></span></li>`}).join("")
+    :`<li class="empty">아직 기록이 없어요. ${all?"첫 번째로 이름을 올려보세요!":"이 설정으로 한 판 끝내면 기록돼요."}</li>`;
+  if(!all&&!shared.ok)msg="기록은 이 기기의 브라우저에 저장돼요.";
+  $("rankMsg").textContent=msg;
+}
+async function initShared(){
+  if(!window.claude||!claude.use)return;
+  let db,user;try{[db,user]=await Promise.all([claude.use("db"),claude.use("user")])}catch(e){return}
+  if(!db||!user)return;
+  let uid=null;try{uid=await user.id()}catch(e){}
+  if(!uid)return;
+  let canW=null;try{canW=await user.can("data.write")}catch(e){}
+  shared.db=db;shared.uid=uid;shared.ok=true;
+  const btn=$("rankSeg").querySelector('[data-v="all"]');btn.hidden=false;
+  if(!store.get("flagmem-rankview"))rankView="all";
+  if(canW===false){shared.ok="read"}
+  const tm=setTimeout(()=>{if(!shared.loaded){shared.err="랭킹 서버에 아직 연결되지 않았어요.";renderRank()}},10000);
+  db.collection("scores").onSnapshot(s=>{shared.docs=s.docs;if(!s.metadata.fromCache){shared.loaded=true;clearTimeout(tm)}renderRank()},e=>{clearTimeout(tm);shared.loaded=true;shared.err="모두의 랭킹을 불러오지 못했어요.";renderRank()});
+  renderRank();
+}
+async function submitShared(nick){
+  const ref=shared.db.doc("scores/"+shared.uid),k=lastRec.k;
+  const snap=await ref.get();const body=snap.exists?JSON.parse(JSON.stringify(snap.data())):{recs:{}};
+  body.recs=body.recs||{};const old=body.recs[k];
+  const improved=!old||better(lastRec,old)<0;
+  if(improved)body.recs[k]={m:lastRec.m,s:lastRec.s,c:lastRec.c,t:lastRec.t};
+  body.nick=nick;
+  await ref.set(body);return improved;
+}
+
+/* ---- 효과음 (Web Audio로 직접 합성) ---- */
+let soundOn=store.get("flagmem-sound")!==false,ac=null;
+function ctx(){if(!ac){try{ac=new (window.AudioContext||window.webkitAudioContext)()}catch(e){return null}}if(ac.state==="suspended")ac.resume().catch(()=>{});return ac}
+function tone(f,d,{type="sine",vol=.18,at=0,to=null,attack=.008}={}){
+  if(!soundOn)return;const a=ctx();if(!a)return;
+  const t=a.currentTime+at,o=a.createOscillator(),g=a.createGain();
+  o.type=type;o.frequency.setValueAtTime(f,t);if(to)o.frequency.exponentialRampToValueAtTime(to,t+d);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(vol,t+attack);g.gain.exponentialRampToValueAtTime(.0001,t+d);
+  o.connect(g).connect(a.destination);o.start(t);o.stop(t+d+.05);
+}
+function noise(d,vol=.12,at=0,hp=2000){
+  if(!soundOn)return;const a=ctx();if(!a)return;
+  const t=a.currentTime+at,len=Math.floor(a.sampleRate*d),buf=a.createBuffer(1,len,a.sampleRate),ch=buf.getChannelData(0);
+  for(let i=0;i<len;i++)ch[i]=(Math.random()*2-1)*(1-i/len);
+  const s=a.createBufferSource(),f=a.createBiquadFilter(),g=a.createGain();
+  s.buffer=buf;f.type="highpass";f.frequency.value=hp;g.gain.value=vol;s.connect(f).connect(g).connect(a.destination);s.start(t);
+}
+const semi=n=>Math.pow(2,n/12);
+const sfx={
+  flip(){noise(.07,.09,0,2500);tone(520,.07,{type:"triangle",vol:.08,to:780})},
+  match(c){const base=523.25*semi(Math.min(c-1,12)*2);tone(base,.14,{type:"triangle",vol:.16});tone(base*semi(4),.14,{type:"triangle",vol:.16,at:.07});tone(base*semi(7),.22,{type:"triangle",vol:.16,at:.14})},
+  combo(c){const base=659.25*semi(Math.min(c,10));[0,4,7,12].forEach((s,i)=>tone(base*semi(s),.12,{type:"square",vol:.06,at:.22+i*.055}));for(let i=0;i<6;i++)tone(2000+Math.random()*2500,.08,{vol:.035,at:.3+i*.04})},
+  miss(){tone(240,.22,{type:"sawtooth",vol:.07,to:150});tone(180,.25,{type:"square",vol:.04,at:.05,to:110})},
+  win(){[523.25,659.25,783.99,1046.5].forEach((f,i)=>tone(f,.22,{type:"triangle",vol:.16,at:i*.13}));tone(1046.5,.7,{type:"triangle",vol:.14,at:.55});tone(1318.5,.7,{type:"sine",vol:.1,at:.55});tone(1568,.7,{type:"sine",vol:.08,at:.55})}
+};
+
+/* ---- 효과 ---- */
+function burst(el,n,cols){
+  if(reduce)return;const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2,fx=$("fx");
+  for(let i=0;i<n;i++){
+    const p=document.createElement("i"),a=Math.random()*Math.PI*2,sp=60+Math.random()*120*(1+n/40),s=6+Math.random()*8;
+    p.style.cssText=`left:${cx}px;top:${cy}px;width:${s}px;height:${s*(.5+Math.random())}px;background:${cols[i%cols.length]};${Math.random()<.4?"border-radius:50%;":""}`;
+    fx.appendChild(p);
+    const dx=Math.cos(a)*sp,dy=Math.sin(a)*sp-40;
+    p.animate([{transform:"translate(-50%,-50%) rotate(0)",opacity:1},{transform:`translate(calc(-50% + ${dx}px),calc(-50% + ${dy+90}px)) rotate(${Math.random()*720-360}deg)`,opacity:0}],{duration:700+Math.random()*500,easing:"cubic-bezier(.2,.7,.4,1)"}).onfinish=()=>p.remove();
+  }
+}
+const comboWords=["","","좋아요!","멋져요!","대단해요!","놀라워요!","천재인가요?","전설!"];
+function showCombo(c){
+  const el=$("comboPop");el.innerHTML=`${c} 연속!<small>${comboWords[Math.min(c,7)]}</small>`;
+  el.classList.remove("go");void el.offsetWidth;el.classList.add("go");
+  if(c>=4&&!reduce){document.body.classList.remove("shakeall");void document.body.offsetWidth;document.body.classList.add("shakeall")}
+}
+
+function setSeg(id,val){for(const b of $(id).querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.v===String(val)))}
+function layout(){
+  const b=$("board"),n=cards.length;if(!n)return;
+  const W=b.parentElement.clientWidth,Hh=Math.max(innerHeight-24,360),gap=parseFloat(getComputedStyle(b).columnGap)||8;
+  let best=null;
+  for(let c=3;c<=12;c++){const rows=Math.ceil(n/c),waste=rows*c-n;if(waste>c/2)continue;
+    const s=Math.min((W-gap*(c-1))/c,(Hh-gap*(rows-1))/rows/1.25);
+    const score=s-waste*4;if(!best||score>best.score)best={c,s,score}}
+  const s=Math.min(best.s,220);
+  b.style.setProperty("--cols",best.c);b.style.maxWidth=Math.ceil(best.c*s+gap*(best.c-1))+"px";
+  b.style.fontSize=Math.max(.62,Math.min(1.25,s/110))+"em";
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+
+function newGame(){
+  clearInterval(timer);timer=null;started=false;secs=0;moves=0;matched=0;open=[];lock=false;foundList=[];combo=0;bestCombo=0;
+  let pool=C.filter(c=>region==="all"||c[2]===region);
+  const n=Math.min(size,pool.length);
+  const pick=shuffle(pool.slice()).slice(0,n);
+  cards=shuffle(pick.flatMap(c=>[{c,kind:"flag"},{c,kind:mode==="name"?"name":"flag"}]));
+  const b=$("board");
+  b.innerHTML=cards.map((k,i)=>{
+    const isFlag=k.kind==="flag";
+    const face=isFlag
+      ?`<span class="flagbox">${flag(k.c[0])}</span>${mode==="flag"?`<span class="cname">${esc(k.c[1])}</span>`:""}`
+      :`<span class="name">${esc(k.c[1])}</span><span class="tag">수도 ${esc(k.c[3])}</span>`;
+    return `<button class="card" data-i="${i}" aria-label="뒤집힌 카드 ${i+1}"><span class="face back">${globe}</span><span class="face front${isFlag?" fc":""}">${face}</span></button>`;
+  }).join("");
+  layout();
+  $("overlay").classList.remove("show");
+  renderFound();update();renderRank();
+  store.set("flagmem-settings",{mode,size,region});
+}
+function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
+function update(){$("moves").textContent=moves;$("time").textContent=fmt(secs);$("pairs").textContent=matched+"/"+cards.length/2;$("combo").textContent=combo;$("comboStat").classList.toggle("hot",combo>=2)}
+function renderFound(){
+  $("found").innerHTML=foundList.length?foundList.map(c=>`<span class="chip">${flag(c[0])}${esc(c[1])} · ${esc(c[3])}</span>`).join(""):'<span class="empty">아직 없어요. 첫 짝을 찾아보세요!</span>';
+}
+function flip(el){
+  const i=+el.dataset.i,k=cards[i];
+  if(lock||el.classList.contains("up")||el.classList.contains("done"))return;
+  if(!started){started=true;timer=setInterval(()=>{secs++;update()},1000)}
+ sfx.flip();
+  el.classList.add("up");el.setAttribute("aria-label",k.c[1]+(k.kind==="flag"?" 국기":" 이름"));
+  open.push(el);
+  if(open.length<2)return;
+  moves++;lock=true;
+  const [a,b]=open,ka=cards[+a.dataset.i],kb=cards[+b.dataset.i];
+  if(ka.c[0]===kb.c[0]){
+    combo++;bestCombo=Math.max(bestCombo,combo);const c=combo;
+    setTimeout(()=>{
+      for(const x of [a,b]){x.classList.add("done","pop");x.classList.toggle("fire",c>=3);setTimeout(()=>x.classList.remove("pop"),550)}
+      sfx.match(c);
+      const cols=c>=3?["#ffd23f","#ff5a4e","#ff9f1c","#fff"]:["#3ccf6e","#ffd23f","#fff"];
+      burst(a,c>=2?10+c*4:8,cols);burst(b,c>=2?10+c*4:8,cols);
+      if(c>=2){showCombo(c);sfx.combo(c);const s=$("comboStat");s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump")}
+      open=[];lock=false;matched++;foundList.push(ka.c);renderFound();update();if(matched===cards.length/2)win()},350);
+  }else{
+    combo=0;
+    setTimeout(()=>{a.classList.add("shake");b.classList.add("shake");sfx.miss();update()},450);
+    setTimeout(()=>{for(const x of [a,b]){x.classList.remove("up","shake");x.setAttribute("aria-label","뒤집힌 카드 "+(+x.dataset.i+1))}open=[];lock=false},1000);
+  }
+  update();
+}
+function win(){
+  clearInterval(timer);
+  setTimeout(()=>{sfx.win();const r=$("board").getBoundingClientRect();for(let i=0;i<5;i++)setTimeout(()=>burst({getBoundingClientRect:()=>({left:r.left+Math.random()*r.width,top:r.top+Math.random()*r.height*.6,width:0,height:0})},26,["#ffd23f","#ff5a4e","#3ccf6e","#4aadd6","#fff"]),i*160)},300);
+  const key=curKey(),rec={k:key,m:moves,s:secs,c:bestCombo,t:Date.now()};
+  const mine=localTop(key);const best=mine[0]?{moves:mine[0].m,secs:mine[0].s}:null;
+  const isRec=!best||better(rec,mine[0])<0;
+  const hist=store.get("flagmem-history")||[];hist.push(rec);store.set("flagmem-history",hist.slice(-400));
+  lastRec=rec;
+  const myRank=localTop(key).findIndex(r=>r.t===rec.t)+1;
+  $("winStats").textContent=`${moves}번 시도 · ${fmt(secs)} · 최대 ${bestCombo}연속`;
+  const acc=Math.round(cards.length/2/moves*100);
+  $("winRec").innerHTML=(isRec?`<span class="rec">새 최고 기록!</span> `:`내 기록 중 ${myRank>0&&myRank<=10?myRank+"위":"10위 밖"} · 최고 ${best.moves}번 · ${fmt(best.secs)}<br>`)+`정확도 ${acc}%`;
+  $("regBox").hidden=!shared.ok;$("regMsg").textContent="";$("regBtn").disabled=false;$("nick").value=store.get("flagmem-nick")||"";
+  renderRank();
+  setTimeout(()=>{$("overlay").classList.add("show");$("again").focus()},500);
+}
+
+$("board").addEventListener("click",e=>{const c=e.target.closest(".card");if(c)flip(c)});
+$("modeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.v;setSeg("modeSeg",mode);newGame()});
+$("sizeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;size=+b.dataset.v;setSeg("sizeSeg",size);newGame()});
+$("region").addEventListener("change",e=>{region=e.target.value;newGame()});
+$("newGame").addEventListener("click",newGame);
+$("rankSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;rankView=b.dataset.v;store.set("flagmem-rankview",rankView);renderRank()});
+$("regForm").addEventListener("submit",async e=>{
+  e.preventDefault();if(!lastRec||!shared.db)return;
+  const nick=$("nick").value.trim().slice(0,16);if(!nick){$("regMsg").textContent="이름을 적어 주세요.";$("nick").focus();return}
+  if(shared.ok==="read"){$("regMsg").textContent="이 페이지에서는 보기만 할 수 있어 등록할 수 없어요.";return}
+  store.set("flagmem-nick",nick);$("regBtn").disabled=true;$("regMsg").textContent="등록 중…";
+  try{const imp=await submitShared(nick);
+    const pos=sharedTop(lastRec.k).findIndex(r=>r.id===shared.uid)+1;
+    $("regMsg").textContent=imp?(pos?`등록했어요! 모두의 랭킹 ${pos}위예요.`:"등록했어요!"):"이미 이보다 좋은 기록이 올라가 있어요.";
+    rankView="all";renderRank();
+  }catch(err){$("regBtn").disabled=false;$("regMsg").textContent=err&&err.code==="invalid_argument"?"이 페이지에서는 기록을 올릴 권한이 없어요.":"등록하지 못했어요. 잠시 후 다시 시도해 주세요."}
+});
+const sb=$("snd");sb.setAttribute("aria-pressed",String(soundOn));
+sb.addEventListener("click",()=>{soundOn=!soundOn;sb.setAttribute("aria-pressed",String(soundOn));store.set("flagmem-sound",soundOn);if(soundOn)sfx.flip()});
+$("again").addEventListener("click",newGame);
+let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(layout,150)});
+
+setSeg("modeSeg",mode);setSeg("sizeSeg",size);$("region").value=region;
+newGame();
+initShared();
+if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js").catch(()=>{});
+}
+</script>
+</body>
+</html>
