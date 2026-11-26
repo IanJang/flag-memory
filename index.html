@@ -582,7 +582,10 @@ $("sizeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(
 $("region").addEventListener("change",e=>{region=e.target.value;newGame()});
 const themeNames={globe:"지구",web:"거미",ocean:"물고기",star:"별",bamboo:"판다",cat:"고양이"};
 $("themeSeg").innerHTML=Object.keys(themeNames).map(t=>`<button data-v="${t}" aria-pressed="false" aria-label="${themeNames[t]} 친구"><span class="mini" data-cardtheme="${t}"><span class="face back">${cardBacks[t]}</span></span><span class="tn">${themeNames[t]}</span></button>`).join("");
-$("themeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cardTheme=b.dataset.v;setSeg("themeSeg",cardTheme);document.documentElement.dataset.cardtheme=cardTheme;newGame()});
+$("themeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cardTheme=b.dataset.v;setSeg("themeSeg",cardTheme);document.documentElement.dataset.cardtheme=cardTheme;
+  // 그림만 바꾸고 하던 게임은 그대로 유지
+  const svg=getBack();document.querySelectorAll("#board .back").forEach(x=>x.innerHTML=svg);
+  store.set("flagmem-settings",{mode,size,region,theme:cardTheme})});
 const menu=$("menu"),mb=$("menuBtn");
 function setMenu(o){menu.hidden=!o;mb.setAttribute("aria-expanded",String(o));mb.setAttribute("aria-label",o?"설정 닫기":"설정 열기")}
 mb.addEventListener("click",()=>setMenu(menu.hidden));
