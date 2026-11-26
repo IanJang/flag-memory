@@ -5,132 +5,163 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>세계 국기 메모리</title>
 <link rel="manifest" href="manifest.webmanifest">
-<meta name="theme-color" content="#0a4a63">
+<meta name="theme-color" content="#7fd4ff">
 <link rel="icon" href="icons/icon-192.png">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="국기 메모리">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Do+Hyeon&family=Gowun+Dodum&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap">
 <style>
 /*
-VOICE: 밝고 경쾌한 퀴즈 게임, 아이와 어른 모두
-IDEA: 바다 위에 펼친 지도책 — 카드 뒷면은 경위선 지구본, 앞면은 펄럭이는 국기
-PICTURE: 게임 보드 자체가 화면의 주인공
-COLOUR and TYPE: 깊은 바다색 바탕, 흰 카드, 해 노랑 보조, 산호색 강조 / Do Hyeon + Gowun Dodum
-LAYOUT: 작은 제목과 설정줄, 그 아래 보드, 하단 상태줄; 600px 이하에서 한 열
+VOICE: 아이들이 신나게 노는 만화책 같은 퀴즈 게임
+IDEA: 만화 스티커 — 굵은 잉크 선, 딱 떨어지는 그림자, 표정 있는 캐릭터 카드
+PICTURE: 카드 뒷면 캐릭터(지구, 거미, 물고기, 별, 판다, 고양이)
+COLOUR and TYPE: 하늘색 바탕, 흰 스티커, 노랑·산호·민트·포도 포인트, 짙은 보라 잉크 / Jua + Gowun Dodum
+LAYOUT: 제목과 점수 스티커, 설정 줄, 보드, 찾은 나라, 랭킹; 600px 이하 한 열
 */
-:root{color-scheme:light dark;
---bg:light-dark(#0e5b78,#062a3a);--bg2:light-dark(#0a4a63,#041f2b);
---ink:#f4fbff;--card:light-dark(#ffffff,#eaf4f8);--cardink:#0b2f3e;
---sun:#ffd23f;--coral:#ff5a4e;--muted:light-dark(#bfe1ee,#8fb7c7)}
-:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+:root{color-scheme:light;--ink:#2d2346;--sky1:#7fd4ff;--sky2:#d2f2ff;--sun:#ffd23f;--coral:#ff6b6b;--mint:#7ee0bd;--grape:#8b6cff;--muted:#5d5480;--bw:3px;--sh:0 4px 0 var(--ink);
+--ol:3px 0 var(--ink),-3px 0 var(--ink),0 3px var(--ink),0 -3px var(--ink),2px 2px var(--ink),-2px 2px var(--ink),2px -2px var(--ink),-2px -2px var(--ink);
+--ol2:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink)}
 *{box-sizing:border-box;min-width:0}
-body{margin:0;background:radial-gradient(120% 80% at 80% 0%,var(--bg) 0%,var(--bg2) 100%) fixed;color:var(--ink);font:16px/1.55 "Gowun Dodum",system-ui,sans-serif;overflow-x:clip;min-height:100vh}
-.wrap{max-width:1600px;margin:0 auto;padding:clamp(18px,3vw,36px) max(4vw,14px) 40px}
-header{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:10px 20px;margin-bottom:16px}
-h1{font:400 clamp(32px,6vw,48px)/1.05 "Do Hyeon",sans-serif;margin:0;text-wrap:balance}
-h1 span{color:var(--sun)}
-.sub{margin:4px 0 0;color:var(--muted)}
-.stats{display:flex;gap:8px}
-.stat{background:rgba(255,255,255,.1);border-radius:14px;padding:6px 14px;text-align:center;min-width:76px}
-.stat b{display:block;font:400 24px/1.1 "Do Hyeon",sans-serif;white-space:nowrap}
-.stat small{font-size:13px;color:var(--muted)}
-.controls{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center;margin-bottom:18px}
-.seg{display:flex;flex-wrap:wrap;background:rgba(0,0,0,.18);border-radius:999px;padding:4px;gap:2px}
-.seg button{border:0;background:none;color:var(--ink);font:inherit;font-size:15px;min-height:40px;padding:0 14px;border-radius:999px;cursor:pointer}
-.seg button[aria-pressed=true]{background:var(--sun);color:#3a2a00;font-weight:700}
-.seg button:focus-visible,.btn:focus-visible,.card:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
-select{font:inherit;font-size:16px;min-height:44px;border-radius:999px;border:0;padding:0 14px;background:rgba(0,0,0,.18);color:var(--ink)}
+body{margin:0;color:var(--ink);font:16px/1.5 "Gowun Dodum",system-ui,sans-serif;min-height:100vh;overflow-x:clip;
+  background:radial-gradient(circle,rgba(255,255,255,.55) 1.6px,transparent 2.2px) 0 0/22px 22px fixed,linear-gradient(180deg,var(--sky1),var(--sky2) 75%) fixed}
+.clouds{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
+.clouds svg{position:absolute;height:auto}
+.clouds .c1{width:150px;top:12px;right:6%;animation:drift 18s ease-in-out infinite alternate}
+.clouds .c2{width:96px;top:58%;left:-20px;animation:drift 24s ease-in-out infinite alternate-reverse}
+.clouds .c3{width:120px;bottom:8%;right:-24px;animation:drift 20s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(26px)}}
+.wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:clamp(16px,3vw,32px) max(4vw,14px) 40px}
+header{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:14px 20px;margin-bottom:18px}
+h1{font:400 clamp(36px,6.4vw,60px)/1.1 "Jua",sans-serif;margin:0;color:#fff;letter-spacing:.01em;text-shadow:var(--ol),0 6px 0 var(--ink),3px 6px 0 var(--ink),-3px 6px 0 var(--ink);text-wrap:balance}
+h1 span{display:inline-block;color:var(--sun);transform:rotate(-3deg)}
+.sub{position:relative;display:inline-block;margin:14px 0 0;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:4px 12px;font-size:15px;box-shadow:0 3px 0 var(--ink)}
+.sub::before{content:"";position:absolute;left:22px;top:-8px;width:12px;height:12px;background:#fff;border-left:2.5px solid var(--ink);border-top:2.5px solid var(--ink);transform:rotate(45deg)}
+.stats{display:flex;gap:10px}
+.stat{background:#fff;border:var(--bw) solid var(--ink);border-radius:18px;padding:6px 12px 4px;text-align:center;min-width:80px;box-shadow:var(--sh)}
+.stat:nth-child(1){background:#fff3b0}.stat:nth-child(2){background:#c9f0ff}.stat:nth-child(3){background:#d4f8e1}.stat:nth-child(4){background:#ffe0ea}
+.stat b{display:block;font:400 26px/1.1 "Jua",sans-serif;white-space:nowrap}
+.stat small{font:400 13px "Jua",sans-serif;color:var(--muted)}
+.stat.hot{background:#ff9f43;transform:rotate(-3deg)}
+.stat.hot b{color:#fff;text-shadow:var(--ol2)}
+.stat.hot small{color:var(--ink)}
+.stat.bump{animation:bump .35s}
+@keyframes bump{40%{transform:scale(1.2) rotate(-4deg)}}
+.controls{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:center;margin-bottom:20px}
+.seg{display:flex;flex-wrap:wrap;background:#fff;border:var(--bw) solid var(--ink);border-radius:999px;padding:3px;gap:2px;box-shadow:var(--sh)}
+.seg button{border:0;background:none;color:var(--ink);font:400 16px "Jua",sans-serif;min-height:40px;padding:0 14px;border-radius:999px;cursor:pointer}
+.seg button[aria-pressed=true]{background:var(--sun);box-shadow:inset 0 0 0 2.5px var(--ink)}
+#modeSeg button[aria-pressed=true]{background:var(--mint)}
+#rankSeg button[aria-pressed=true]{background:#ffc2d4}
+select,.snd{appearance:none;-webkit-appearance:none;font:400 16px "Jua",sans-serif;min-height:46px;border-radius:999px;border:var(--bw) solid var(--ink);padding:0 38px 0 16px;color:var(--ink);box-shadow:var(--sh);cursor:pointer;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 10'%3E%3Cpath d='M2 2l5 5 5-5' fill='none' stroke='%232d2346' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 14px center/13px}
 select option{color:#000}
-.btn{border:0;font:400 18px "Do Hyeon",sans-serif;min-height:44px;padding:0 22px;border-radius:999px;background:var(--coral);color:#fff;cursor:pointer;box-shadow:0 4px 0 #b8362d}
-.btn:active{transform:translateY(2px);box-shadow:0 2px 0 #b8362d}
-.board{margin:0 auto;display:grid;gap:clamp(6px,1.2vw,12px);grid-template-columns:repeat(var(--cols),minmax(0,1fr));perspective:900px}
+.snd{display:inline-flex;align-items:center;gap:6px;padding:0 16px;background:#fff}
+.snd svg{width:20px;height:20px}
+.snd[aria-pressed=false]{background:#e9e5f5}
+.snd[aria-pressed=false] .on,.snd[aria-pressed=true] .off{display:none}
+.btn{border:var(--bw) solid var(--ink);font:400 20px "Jua",sans-serif;min-height:48px;padding:0 24px;border-radius:999px;background:var(--coral);color:#fff;cursor:pointer;box-shadow:0 5px 0 var(--ink);text-shadow:0 2px 0 rgba(45,35,70,.35)}
+.btn:active,.seg button:active,select:active,.snd:active{transform:translateY(2px)}
+.btn:active{box-shadow:0 2px 0 var(--ink)}
+.seg button:focus-visible,.btn:focus-visible,.card:focus-visible,select:focus-visible,.snd:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
+.board{margin:0 auto;display:grid;gap:clamp(8px,1.3vw,14px);grid-template-columns:repeat(var(--cols),minmax(0,1fr));perspective:900px;padding-bottom:6px}
 .card{position:relative;aspect-ratio:4/5;font-size:inherit;color:inherit;border:0;padding:0;background:none;cursor:pointer;transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.4,.5,1)}
 .card.up,.card.done{transform:rotateY(180deg)}
-.face{position:absolute;inset:0;border-radius:14px;backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden}
-.back{background:linear-gradient(160deg,#ffde5c,#ffb72b);box-shadow:inset 0 -5px 0 rgba(0,0,0,.12),0 6px 14px rgba(0,0,0,.25)}
-.back svg{width:62%;height:auto;opacity:.9}
-.front{transform:rotateY(180deg);background:var(--card);color:var(--cardink);box-shadow:0 6px 14px rgba(0,0,0,.25);padding:6px}
+.face{position:absolute;inset:0;border-radius:max(10px,.95em);backface-visibility:hidden;-webkit-backface-visibility:hidden;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;overflow:hidden;border:max(2px,.19em) solid var(--ink);box-shadow:0 max(3px,.3em) 0 var(--ink)}
+.back{background:radial-gradient(circle,var(--dot) 1.5px,transparent 2px) 0 0/11px 11px,var(--bk);transition:transform .15s}
+.back svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+@media(hover:hover){.card:not(.up):not(.done):hover .back{transform:translateY(-3px) rotate(-1deg)}}
+:root{--bk:#ffd23f;--dot:rgba(255,255,255,.45)}
+[data-cardtheme=web]{--bk:#ff4f6d;--dot:rgba(45,35,70,.14)}
+[data-cardtheme=ocean]{--bk:#4cc9f0;--dot:rgba(255,255,255,.4)}
+[data-cardtheme=star]{--bk:#6c4ee0;--dot:rgba(255,255,255,.16)}
+[data-cardtheme=bamboo]{--bk:#7bd389;--dot:rgba(255,255,255,.35)}
+[data-cardtheme=cat]{--bk:#ff9ec7;--dot:rgba(255,255,255,.45)}
+.front{transform:rotateY(180deg);background:#fff;color:var(--ink);padding:6px}
 .front.fc{justify-content:space-between;gap:0;padding:0}
-.flagbox{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:8% 7%}
-.fl{display:block;width:100%;line-height:0}
-.fl{display:flex;justify-content:center}
+.flagbox{flex:1;display:flex;align-items:center;justify-content:center;width:100%;padding:9% 8%}
+.fl{display:flex;justify-content:center;width:100%;line-height:0}
 .fl svg[style*="32/32"]{width:72%!important}.fl svg[style*="15/13"]{width:88%!important}
-.fl svg{display:block;width:100%;height:auto;border-radius:3px;box-shadow:0 0 0 1px rgba(0,0,0,.1),0 3px 8px rgba(0,0,0,.18)}
-.cname{width:100%;background:#eef5f8;border-top:1px solid #d6e6ed;padding:.4em .25em .45em;font:400 max(10px,1em)/1.15 "Do Hyeon",sans-serif;text-align:center;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.02em;color:var(--cardink)}
-.card.done .cname{background:#c9f2d4;border-color:#9fe2b3}
-.chip .fl{display:inline-block;width:24px;vertical-align:-3px;margin-right:4px}
-.chip .fl svg{box-shadow:0 0 0 1px rgba(0,0,0,.15)}
-.name{padding:0 .2em;font:400 max(13px,1.15em)/1.15 "Do Hyeon",sans-serif;text-align:center;word-break:keep-all}
-.tag{font-size:max(11px,.75em);color:#4d7486;text-align:center;line-height:1.2}
-.card.done .front{background:#e6fbe9;box-shadow:0 0 0 3px #3ccf6e,0 6px 14px rgba(0,0,0,.25)}
+.fl svg{display:block;width:100%;height:auto;border-radius:4px;box-shadow:0 0 0 max(1.5px,.12em) var(--ink)}
+.cname{width:100%;background:#ffe680;border-top:max(2px,.16em) solid var(--ink);padding:.38em .25em .42em;font:400 max(10px,1.02em)/1.15 "Jua",sans-serif;text-align:center;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.01em;color:var(--ink)}
+.front:not(.fc){background:#fff8e0}
+.name{padding:0 .2em;font:400 max(13px,1.2em)/1.15 "Jua",sans-serif;text-align:center;word-break:keep-all}
+.tag{font-size:max(11px,.75em);color:var(--muted);text-align:center;line-height:1.2}
 .card.done{cursor:default}
-.card.shake .front{animation:shake .4s}
-@keyframes shake{25%{transform:rotateY(180deg) translateX(-5px)}75%{transform:rotateY(180deg) translateX(5px)}}
-.found{margin-top:22px}
-.found h2{font:400 22px "Do Hyeon",sans-serif;margin:0 0 8px}
-.chips{display:flex;flex-wrap:wrap;gap:6px}
-.chip{background:rgba(255,255,255,.12);border-radius:999px;padding:4px 12px;font-size:14px;white-space:nowrap}
-.empty{color:var(--muted);font-size:14px}
-.overlay{position:fixed;inset:0;background:rgba(3,20,28,.6);display:none;align-items:center;justify-content:center;padding:20px;z-index:5}
-.overlay.show{display:flex}
-.dialog{background:var(--card);color:var(--cardink);border-radius:22px;padding:28px 26px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 50px rgba(0,0,0,.4)}
-.dialog h2{font:400 36px/1.1 "Do Hyeon",sans-serif;margin:0 0 6px}
-.dialog p{margin:6px 0}
-.dialog .big{font:400 22px "Do Hyeon",sans-serif;color:#0e5b78}
-.dialog .rec{color:var(--coral);font-weight:700}
-.dialog .btn{margin-top:14px}
-.rank{margin-top:26px;background:rgba(0,0,0,.16);border-radius:18px;padding:16px clamp(12px,2.5vw,22px) 12px}
-.rank-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:8px}
-.rank h2{font:400 24px "Do Hyeon",sans-serif;margin:0}
+.card.done .front{background:#d4f8e1}
+.card.done .cname{background:#8ee6b3}
+.card.done .front::after{content:"";position:absolute;top:.3em;right:.3em;width:1.4em;height:1.4em;min-width:16px;min-height:16px;border-radius:50%;border:max(1.5px,.13em) solid var(--ink);background:#3ccf8e url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M5 12.5l4.5 4.5L19 7.5' fill='none' stroke='white' stroke-width='3.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/72% no-repeat}
+.card.shake .front{animation:shake .4s;background:#ffe1e1}
+@keyframes shake{25%{transform:rotateY(180deg) translateX(-5px) rotate(-2deg)}75%{transform:rotateY(180deg) translateX(5px) rotate(2deg)}}
+.card.pop{animation:pop .5s ease-out}
+@keyframes pop{0%{transform:rotateY(180deg) scale(1)}35%{transform:rotateY(180deg) scale(1.12) rotate(-3deg)}100%{transform:rotateY(180deg) scale(1)}}
+.card.fire .front{box-shadow:0 max(3px,.3em) 0 var(--ink),0 0 0 max(3px,.28em) #ffb02e,0 0 22px 6px rgba(255,140,40,.8)}
+.found{margin-top:24px}
+.found h2,.rank h2{font:400 24px "Jua",sans-serif;margin:0 0 10px}
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip{background:#fff;border:2.5px solid var(--ink);border-radius:999px;padding:3px 12px 3px 7px;font:400 15px "Jua",sans-serif;white-space:nowrap;box-shadow:0 3px 0 var(--ink)}
+.chip .fl{display:inline-block;width:26px;vertical-align:-3px;margin-right:5px}
+.chip .fl svg{box-shadow:0 0 0 1.5px var(--ink)}
+.empty{color:var(--muted);font-size:15px}
+.rank{margin-top:28px;background:#fff;border:var(--bw) solid var(--ink);border-radius:24px;padding:16px clamp(12px,2.5vw,22px) 12px;box-shadow:0 6px 0 var(--ink)}
+.rank-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 14px;margin-bottom:6px}
+.rank h2{margin:0;font-size:28px}
+.rank h2::before{content:"🏆";margin-right:6px}
+.rank .seg{box-shadow:none}
 .rank .cur{color:var(--muted);font-size:14px;margin:0 0 8px}
 .rank ol{list-style:none;margin:0;padding:0}
-.rank li{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto auto;gap:10px;align-items:center;padding:9px 4px;border-top:1px solid rgba(255,255,255,.1);font-size:15px}
+.rank li{display:grid;grid-template-columns:34px minmax(0,1fr) auto auto auto;gap:10px;align-items:center;padding:8px 6px;border-top:2px dashed #e2dcf2;font-size:16px}
 .rank li:first-child{border-top:0}
-.rank li.me{background:rgba(255,210,63,.14);border-radius:10px}
-.rank .no{font:400 20px "Do Hyeon",sans-serif;text-align:center;color:var(--muted)}
-.rank li:nth-child(1) .no{color:#ffd23f}.rank li:nth-child(2) .no{color:#dfe7ec}.rank li:nth-child(3) .no{color:#f0a868}
-.rank .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank li.me{background:#fff3b0;border-radius:12px}
+.rank .no{display:grid;place-items:center;width:32px;height:32px;border-radius:50%;border:2.5px solid var(--ink);background:#f1eefa;font:400 17px "Jua",sans-serif}
+.rank li:nth-child(1) .no{background:#ffd23f}.rank li:nth-child(2) .no{background:#dfe6ee}.rank li:nth-child(3) .no{background:#f4b27a}
+.rank .who{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:"Jua",sans-serif}
 .rank .who small{color:var(--muted);font-size:13px;margin-left:6px}
-.rank .v{white-space:nowrap;text-align:right;font-variant-numeric:tabular-nums}
+.rank .v{white-space:nowrap;text-align:right;font:400 17px "Jua",sans-serif;font-variant-numeric:tabular-nums}
 .rank .v small{color:var(--muted);font-size:13px;margin-left:2px}
 .rank li.empty{display:block;padding:12px 4px;color:var(--muted);font-size:15px}
 .rank .msg{font-size:13px;color:var(--muted);margin:8px 4px 0}
+.overlay{position:fixed;inset:0;background:rgba(45,35,70,.55);display:none;align-items:center;justify-content:center;padding:60px 20px 20px;z-index:5}
+.overlay.show{display:flex}
+.dialog{position:relative;background:#fff;color:var(--ink);border:4px solid var(--ink);border-radius:28px;padding:58px 24px 24px;max-width:390px;width:100%;text-align:center;box-shadow:0 8px 0 var(--ink)}
+.overlay.show .dialog{animation:popin .5s cubic-bezier(.2,1.5,.4,1)}
+@keyframes popin{0%{transform:scale(.5) rotate(-6deg);opacity:0}100%{transform:none;opacity:1}}
+.trophy{position:absolute;left:50%;top:-52px;width:96px;transform:translateX(-50%)}
+.trophy svg{display:block;width:100%;height:auto}
+.dialog h2{font:400 42px/1.1 "Jua",sans-serif;margin:0 0 8px;color:var(--sun);text-shadow:var(--ol),0 5px 0 var(--ink)}
+.dialog p{margin:6px 0}
+.dialog .big{font:400 22px "Jua",sans-serif;color:var(--grape)}
+.dialog .rec{color:var(--coral);font-family:"Jua",sans-serif;font-size:18px}
+.dialog .btn{margin-top:16px}
 .dialog .reg{display:flex;gap:8px;margin-top:14px}
-.dialog .reg input{flex:1;font:inherit;font-size:16px;min-height:44px;border-radius:12px;border:2px solid #cfe0e7;padding:0 12px;color:var(--cardink);background:#fff}
-.dialog .reg input:focus-visible{outline:3px solid #0e5b78;outline-offset:1px}
-.dialog .reg button{border:0;border-radius:12px;min-height:44px;padding:0 14px;font:400 17px "Do Hyeon",sans-serif;background:#0e5b78;color:#fff;cursor:pointer;white-space:nowrap}
+.dialog .reg input{flex:1;font:inherit;font-size:16px;min-height:46px;border-radius:14px;border:3px solid var(--ink);padding:0 12px;color:var(--ink);background:#fff}
+.dialog .reg input:focus-visible{outline:3px solid var(--grape);outline-offset:1px}
+.dialog .reg button{border:3px solid var(--ink);border-radius:14px;min-height:46px;padding:0 14px;font:400 17px "Jua",sans-serif;background:var(--grape);color:#fff;cursor:pointer;white-space:nowrap;box-shadow:0 3px 0 var(--ink)}
 .dialog .reg button:disabled{opacity:.5;cursor:default}
-.dialog .regmsg{font-size:14px;min-height:1.4em;color:#0e5b78}
-@media(max-width:600px){.rank li{grid-template-columns:28px minmax(0,1fr) auto auto;gap:8px}.rank .v.c{display:none}}
+.dialog .regmsg{font-size:14px;min-height:1.4em;color:var(--grape)}
+@media(max-width:600px){.rank li{grid-template-columns:30px minmax(0,1fr) auto auto;gap:8px}.rank .v.c{display:none}.rank .no{width:28px;height:28px;font-size:15px}}
 .note{margin-top:18px;font-size:13px;color:var(--muted)}
-.stat.hot{background:linear-gradient(160deg,#ff8a3d,#ff3d5a);box-shadow:0 0 18px rgba(255,90,60,.6)}
-.stat.bump{animation:bump .35s}
-@keyframes bump{40%{transform:scale(1.18)}}
-.snd{display:inline-flex;align-items:center;gap:6px;border:0;font:inherit;font-size:15px;min-height:44px;padding:0 14px;border-radius:999px;background:rgba(0,0,0,.18);color:var(--ink);cursor:pointer}
-.snd svg{width:20px;height:20px}
-.snd[aria-pressed=false] .on,.snd[aria-pressed=true] .off{display:none}
-.snd:focus-visible{outline:3px solid var(--sun);outline-offset:2px}
 .stage{position:relative}
-.combo{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);pointer-events:none;z-index:4;text-align:center;white-space:nowrap;font:400 clamp(40px,11vw,84px)/1 "Do Hyeon",sans-serif;color:#fff;-webkit-text-stroke:2px rgba(120,20,0,.35);text-shadow:0 4px 0 #ff5a4e,0 8px 24px rgba(0,0,0,.45);opacity:0}
-.combo small{display:block;font-size:.36em;color:var(--sun);text-shadow:0 2px 0 rgba(0,0,0,.35);-webkit-text-stroke:0;margin-top:6px}
+.combo{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);pointer-events:none;z-index:4;text-align:center;white-space:nowrap;font:400 clamp(38px,9vw,76px)/1 "Jua",sans-serif;color:var(--sun);text-shadow:var(--ol),0 6px 0 var(--ink);padding:.5em .8em;opacity:0}
+.combo::before,.combo::after{content:"";position:absolute;z-index:-1;clip-path:polygon(100% 50%,84.8% 59.3%,93.3% 75%,75.5% 75.5%,75% 93.3%,59.3% 84.8%,50% 100%,40.7% 84.8%,25% 93.3%,24.5% 75.5%,6.7% 75%,15.2% 59.3%,0 50%,15.2% 40.7%,6.7% 25%,24.5% 24.5%,25% 6.7%,40.7% 15.2%,50% 0,59.3% 15.2%,75% 6.7%,75.5% 24.5%,93.3% 25%,84.8% 40.7%)}
+.combo::before{inset:-12% -6%;background:var(--ink)}
+.combo::after{inset:calc(-12% + 6px) calc(-6% + 6px);background:var(--coral)}
+.combo small{display:block;font-size:.4em;color:#fff;text-shadow:var(--ol2),0 3px 0 var(--ink);margin-top:8px}
 .combo.go{animation:combo 1.1s cubic-bezier(.2,1.4,.4,1) forwards}
-@keyframes combo{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-8deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(3deg)}45%{transform:translate(-50%,-50%) scale(1) rotate(0)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1)}}
-.card.pop{animation:pop .5s ease-out}
-@keyframes pop{0%{transform:rotateY(180deg) scale(1)}35%{transform:rotateY(180deg) scale(1.12)}100%{transform:rotateY(180deg) scale(1)}}
-.card.fire .front{box-shadow:0 0 0 3px #ffb02e,0 0 22px 4px rgba(255,120,40,.75)}
+@keyframes combo{0%{opacity:0;transform:translate(-50%,-50%) scale(.3) rotate(-10deg)}25%{opacity:1;transform:translate(-50%,-50%) scale(1.1) rotate(3deg)}45%{transform:translate(-50%,-50%) scale(1) rotate(-2deg)}80%{opacity:1}100%{opacity:0;transform:translate(-50%,-80%) scale(1) rotate(-2deg)}}
 .fx{position:fixed;inset:0;pointer-events:none;z-index:6;overflow:hidden}
-.fx i{position:absolute;width:10px;height:10px;border-radius:2px;will-change:transform,opacity}
+.fx i{position:absolute;width:10px;height:10px;border-radius:2px;border:2px solid var(--ink);will-change:transform,opacity}
 body.shakeall .board{animation:quake .35s}
 @keyframes quake{20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
-@media(max-width:600px){header{align-items:start}.stats{width:100%}.stat{flex:1}.controls{gap:8px}.seg button{padding:0 10px;font-size:14px}.face{border-radius:10px}.tag{display:none}}
-@media(prefers-reduced-motion:reduce){.card{transition:none}.card.shake .front,.card.pop,.stat.bump,body.shakeall .board{animation:none}.combo.go{animation:fade 1.1s forwards}@keyframes fade{0%,80%{opacity:1}100%{opacity:0}}}
+@media(max-width:600px){header{align-items:start}.stats{width:100%}.stat{flex:1;min-width:0;padding:5px 4px 3px}.stat b{font-size:22px}.controls{gap:10px}.seg button{padding:0 11px;font-size:15px}.tag{display:none}.clouds .c1{width:100px}.clouds .c2,.clouds .c3{display:none}}
+@media(prefers-reduced-motion:reduce){.card,.back{transition:none}.clouds svg{animation:none}.card.shake .front,.card.pop,.stat.bump,body.shakeall .board,.overlay.show .dialog{animation:none}.combo.go{animation:fade 1.1s forwards}@keyframes fade{0%,80%{opacity:1}100%{opacity:0}}}
 </style>
 </head>
 <body>
+<div class="clouds" aria-hidden="true"><svg class="c1" viewBox="-4 -4 128 66"><path d="M22 54H98a14 14 0 0 0 2-28a20 20 0 0 0-36-12a16 16 0 0 0-28 6a16 16 0 0 0-14 34Z" fill="#fff" stroke="#2d2346" stroke-width="3" stroke-linejoin="round"/><path d="M30 46h40" stroke="#c9ecff" stroke-width="3" stroke-linecap="round"/></svg><svg class="c2" viewBox="-4 -4 128 66"><path d="M22 54H98a14 14 0 0 0 2-28a20 20 0 0 0-36-12a16 16 0 0 0-28 6a16 16 0 0 0-14 34Z" fill="#fff" stroke="#2d2346" stroke-width="3" stroke-linejoin="round"/><path d="M30 46h40" stroke="#c9ecff" stroke-width="3" stroke-linecap="round"/></svg><svg class="c3" viewBox="-4 -4 128 66"><path d="M22 54H98a14 14 0 0 0 2-28a20 20 0 0 0-36-12a16 16 0 0 0-28 6a16 16 0 0 0-14 34Z" fill="#fff" stroke="#2d2346" stroke-width="3" stroke-linejoin="round"/><path d="M30 46h40" stroke="#c9ecff" stroke-width="3" stroke-linecap="round"/></svg></div>
 <div class="wrap">
   <header>
     <div>
@@ -138,10 +169,10 @@ body.shakeall .board{animation:quake .35s}
       <p class="sub">카드를 두 장씩 뒤집어 같은 짝을 찾아보세요.</p>
     </div>
     <div class="stats">
-      <div class="stat"><b id="moves">0</b><small>시도</small></div>
-      <div class="stat"><b id="time">0:00</b><small>시간</small></div>
-      <div class="stat"><b id="pairs">0/0</b><small>짝</small></div>
-      <div class="stat" id="comboStat"><b id="combo">0</b><small>연속</small></div>
+      <div class="stat"><b id="moves">0</b><small>🎯 시도</small></div>
+      <div class="stat"><b id="time">0:00</b><small>⏱️ 시간</small></div>
+      <div class="stat"><b id="pairs">0/0</b><small>🧩 짝</small></div>
+      <div class="stat" id="comboStat"><b id="combo">0</b><small>🔥 연속</small></div>
     </div>
   </header>
 
@@ -163,6 +194,14 @@ body.shakeall .board{animation:quake .35s}
       <option value="am">아메리카</option>
       <option value="af">아프리카·중동</option>
       <option value="oc">오세아니아·섬나라</option>
+    </select>
+    <select id="cardTheme" aria-label="카드 뒷면 그림">
+      <option value="globe">🌍 지구 친구</option>
+      <option value="web">🕷️ 거미 친구</option>
+      <option value="ocean">🐠 물고기 친구</option>
+      <option value="star">⭐ 별 친구</option>
+      <option value="bamboo">🐼 판다 친구</option>
+      <option value="cat">🐱 고양이 친구</option>
     </select>
     <button class="snd" id="snd" aria-pressed="true" aria-label="효과음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M17 9l5 6M22 9l-5 6"/></svg><span class="on">소리 켬</span><span class="off">소리 끔</span></button>
     <button class="btn" id="newGame">새 게임</button>
@@ -196,6 +235,7 @@ body.shakeall .board{animation:quake .35s}
 <div class="fx" id="fx"></div>
 <div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="winTitle">
   <div class="dialog">
+    <div class="trophy" aria-hidden="true"><svg viewBox="0 0 80 80"><path d="M18 20H8q0 18 16 20M62 20h10q0 18-16 20" fill="none" stroke="#2d2346" stroke-width="4" stroke-linecap="round"/><path d="M18 20H8q0 18 16 20M62 20h10q0 18-16 20" fill="none" stroke="#ffd23f" stroke-width="1.6" stroke-linecap="round"/><path d="M18 10H62V28Q62 50 40 52Q18 50 18 28Z" fill="#ffd23f" stroke="#2d2346" stroke-width="4" stroke-linejoin="round"/><path d="M26 17v11" stroke="#fff" stroke-width="4" stroke-linecap="round" opacity=".8"/><path d="M40 21l3 6 6.5.8-4.8 4.5 1.3 6.5L40 35.6l-6 3.2 1.3-6.5-4.8-4.5L37 27z" fill="#fff" stroke="#2d2346" stroke-width="2" stroke-linejoin="round"/><rect x="34" y="52" width="12" height="10" fill="#ffb703" stroke="#2d2346" stroke-width="4"/><rect x="22" y="62" width="36" height="12" rx="4" fill="#ff6b6b" stroke="#2d2346" stroke-width="4"/></svg></div>
     <h2 id="winTitle">완성! 🎉</h2>
     <p class="big" id="winStats"></p>
     <p id="winRec"></p>
@@ -221,7 +261,77 @@ const flag=c=>`<span class="fl">${flagSVG(c)}</span>`;
 const esc=s=>String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const $=id=>document.getElementById(id);
 const store={get(k){try{return JSON.parse(localStorage.getItem(k))}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
-const globe='<svg viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="44" fill="#0e5b78"/><g fill="none" stroke="#ffe680" stroke-width="2.4"><ellipse cx="50" cy="50" rx="18" ry="44"/><ellipse cx="50" cy="50" rx="34" ry="44"/><line x1="50" y1="6" x2="50" y2="94"/><path d="M8 36h84M6 50h88M8 64h84"/></g><path d="M30 28c8-4 16 0 14 8s-12 4-16 10-8-12 2-18zM58 56c10-2 20 4 16 12s-14 8-18 2 0-12 2-14z" fill="#3ccf6e"/><circle cx="50" cy="50" r="44" fill="none" stroke="#fff" stroke-width="3"/></svg>';
+const K="#2d2346";
+const eyes=(x1,x2,y,s=1)=>`<g fill="${K}"><ellipse cx="${x1}" cy="${y}" rx="${2.6*s}" ry="${3.4*s}"/><ellipse cx="${x2}" cy="${y}" rx="${2.6*s}" ry="${3.4*s}"/></g><g fill="#fff"><circle cx="${x1+.9*s}" cy="${y-1.3*s}" r="${1*s}"/><circle cx="${x2+.9*s}" cy="${y-1.3*s}" r="${1*s}"/></g>`;
+const blush=(x1,x2,y,s=1)=>`<g fill="#ff6f9c" opacity=".55"><ellipse cx="${x1}" cy="${y}" rx="${3.4*s}" ry="${2.1*s}"/><ellipse cx="${x2}" cy="${y}" rx="${3.4*s}" ry="${2.1*s}"/></g>`;
+const smile=(x,y,w=4,c=K)=>`<path d="M${x-w} ${y}Q${x} ${y+w*1.1} ${x+w} ${y}" fill="none" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`;
+const spark=(x,y,r,c="#fff")=>`<path d="M${x} ${y-r}Q${x} ${y} ${x+r} ${y}Q${x} ${y} ${x} ${y+r}Q${x} ${y} ${x-r} ${y}Q${x} ${y} ${x} ${y-r}Z" fill="${c}"/>`;
+const paw=(x,y)=>`<g fill="#fff" opacity=".6"><ellipse cx="${x}" cy="${y+1.5}" rx="3.6" ry="3"/><circle cx="${x-3.6}" cy="${y-3}" r="1.5"/><circle cx="${x}" cy="${y-4.4}" r="1.5"/><circle cx="${x+3.6}" cy="${y-3}" r="1.5"/></g>`;
+const line2=(d,c,w=3.2)=>`<path d="${d}" fill="none" stroke="${K}" stroke-width="${w+2.6}" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linecap="round"/>`;
+const sv=b=>`<svg viewBox="0 0 80 100" preserveAspectRatio="xMidYMid slice" aria-hidden="true"><rect x="5" y="5" width="70" height="90" rx="8" fill="none" stroke="#fff" stroke-width="1.6" stroke-dasharray="3.5 3" opacity=".8"/>${b}</svg>`;
+const S=`stroke="${K}" stroke-linejoin="round" stroke-linecap="round"`;
+const webCorner=`<g fill="none" stroke="${K}" stroke-width="1.3" opacity=".6" stroke-linecap="round"><path d="M0 0L36 6M0 0L30 22M0 0L18 32M0 0L4 36"/><path d="M12 2Q9.3 4 9.9 7.3Q6.7 7.6 5.9 10.6Q3.1 9.6 1.3 11.9"/><path d="M23.8 4Q18.5 7.9 19.8 14.5Q13.5 15.1 11.9 21.1Q6.2 19.1 2.6 23.8"/><path d="M34.2 5.7Q27.6 11.7 28.5 20.9Q20.1 22.6 17.1 30.4Q9.2 28.4 3.8 34.2"/></g>`;
+const cardBacks={
+globe:sv(`${spark(14,20,4)}${spark(67,26,3)}${spark(64,84,4)}${spark(16,80,3)}
+<path d="M47 29L50.5 11" ${S} stroke-width="2.2"/><path d="M50.5 11q6-2.4 12 .8l-1.6 8q-5.6-2.6-11.8-.6z" fill="#ff6b6b" ${S} stroke-width="2"/>
+<circle cx="40" cy="51" r="23" fill="#4cc9f0" ${S} stroke-width="3"/>
+<path d="M23 44q2-9 12-11 6 0 6 4t-6 5-7 5q-4 0-5-3z" fill="#7bd389"/><path d="M46 57q5-3 9 0 2 3 0 7-3 3-7 1-3-5-2-8z" fill="#7bd389"/><path d="M22 58q4 0 5 4-2 4-5 1z" fill="#7bd389"/>
+<path d="M50 32a19 19 0 0 1 8 7" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"/>
+<circle cx="40" cy="51" r="23" fill="none" stroke="${K}" stroke-width="3"/>
+${blush(28,52,56)}${eyes(33,47,50)}${smile(40,57,3.6)}`),
+web:sv(`${webCorner}<g transform="rotate(180 40 50)">${webCorner}</g>${spark(64,20,3.5)}${spark(16,80,3.5)}
+<path d="M40 0V38" stroke="${K}" stroke-width="1.6"/>
+<g fill="none" stroke="${K}" stroke-width="3" stroke-linecap="round"><path d="M29 45Q20 36 13 42"/><path d="M28 50Q18 46 11 52"/><path d="M28 55Q18 56 13 63"/><path d="M30 60Q22 66 18 73"/><path d="M51 45Q60 36 67 42"/><path d="M52 50Q62 46 69 52"/><path d="M52 55Q62 56 67 63"/><path d="M50 60Q58 66 62 73"/></g>
+<circle cx="40" cy="52" r="14" fill="${K}"/><path d="M33 41.5q7-4 14 0" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round" opacity=".35"/>
+<g fill="#fff"><ellipse cx="34.6" cy="49" rx="4.3" ry="5"/><ellipse cx="45.4" cy="49" rx="4.3" ry="5"/></g><g fill="${K}"><circle cx="35.4" cy="50" r="2.4"/><circle cx="46.2" cy="50" r="2.4"/></g><g fill="#fff"><circle cx="36.2" cy="48.8" r=".9"/><circle cx="47" cy="48.8" r=".9"/></g>
+${blush(30.5,49.5,57,.8)}${smile(40,57.5,3.4,"#fff")}`),
+ocean:sv(`<g fill="#fff" ${S} stroke-width="1.6"><circle cx="16" cy="36" r="3.2"/><circle cx="11" cy="26" r="2.3"/><circle cx="17" cy="17" r="1.6"/></g>${spark(66,18,3.5)}
+<path d="M-4 84q11-7 22 0t22 0 22 0 22 0V104H-4z" fill="#3a86ff" ${S} stroke-width="2.5"/>
+<path d="M-4 93q22-6 44 0t44 0V104H-4z" fill="#ffd98a" ${S} stroke-width="2.5"/>
+${line2("M13 93q-4-6 0-11t0-11","#2bb673",3)}${line2("M67 93q4-5 0-9t0-9","#2bb673",3)}
+<path d="M56 48L70 37Q66 48 70 59Z" fill="#ff9f1c" ${S} stroke-width="3"/>
+<path d="M28 35Q36 22 48 33Z" fill="#ff9f1c" ${S} stroke-width="3"/><path d="M34 63Q39 73 46 62Z" fill="#ff9f1c" ${S} stroke-width="3"/>
+<ellipse cx="38" cy="48" rx="21" ry="17" fill="#ffb347"/>
+<path d="M44 33q5 15 0 30M52 36.5q4 11.5 0 23" fill="none" stroke="#fff" stroke-width="3.5"/>
+<ellipse cx="38" cy="48" rx="21" ry="17" fill="none" stroke="${K}" stroke-width="3"/>
+<circle cx="28" cy="45" r="6" fill="#fff" ${S} stroke-width="2.2"/><circle cx="29" cy="46" r="3" fill="${K}"/><circle cx="30.2" cy="44.6" r="1.1" fill="#fff"/>
+<ellipse cx="27" cy="54" rx="3" ry="2" fill="#ff6f9c" opacity=".55"/><path d="M18.5 51.5q3 2.6 6 0" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round"/>`),
+star:sv(`${spark(14,20,4)}${spark(27,11,2.4)}${spark(68,74,3.5)}${spark(72,88,2.4)}${spark(57,90,2)}${spark(10,52,2.4)}
+<g fill="#fff" opacity=".7"><circle cx="70" cy="50" r=".9"/><circle cx="20" cy="62" r=".9"/><circle cx="52" cy="14" r=".9"/><circle cx="34" cy="88" r=".9"/></g>
+<path d="M63 12a8 8 0 1 0 7.6 10.6a6.6 6.6 0 0 1-7.6-10.6z" fill="#fff3b0" ${S} stroke-width="2.4"/>
+<g transform="rotate(-20 17 81)"><ellipse cx="17" cy="81" rx="12.5" ry="3.6" fill="none" stroke="${K}" stroke-width="5"/><ellipse cx="17" cy="81" rx="12.5" ry="3.6" fill="none" stroke="#ffd23f" stroke-width="2.4"/></g>
+<circle cx="17" cy="81" r="7" fill="#ff8fab" ${S} stroke-width="2.5"/>
+<g transform="rotate(-20 17 81)"><path d="M4.5 81a12.5 3.6 0 0 0 25 0" fill="none" stroke="${K}" stroke-width="5"/><path d="M4.5 81a12.5 3.6 0 0 0 25 0" fill="none" stroke="#ffd23f" stroke-width="2.4"/></g>
+<path d="M40 25.5L47.6 39.6L63.3 42.4L52.2 53.9L54.4 69.6L40 62.6L25.6 69.6L27.8 53.9L16.7 42.4L32.4 39.6Z" fill="#ffd23f" ${S} stroke-width="3"/>
+<path d="M37 31l-2.6 5" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".85"/>
+${blush(31.5,48.5,54,.75)}${eyes(35,45,48,.8)}${smile(40,54,2.8)}`),
+bamboo:sv(`<rect x="7" y="-4" width="7" height="108" rx="3" fill="#c3f5b5" ${S} stroke-width="2.4"/><rect x="66" y="-4" width="7" height="108" rx="3" fill="#c3f5b5" ${S} stroke-width="2.4"/>
+<path d="M7 22h7M7 47h7M7 72h7M66 30h7M66 55h7M66 80h7" stroke="${K}" stroke-width="2"/>
+<path d="M14 30q8-7 15-2q-7 6-15 2z" fill="#4cb963" ${S} stroke-width="2"/><path d="M66 62q-8-7-15-2q7 6 15 2z" fill="#4cb963" ${S} stroke-width="2"/><path d="M66 22q-6-6-12-1q6 5 12 1z" fill="#4cb963" ${S} stroke-width="2"/>
+<ellipse cx="40" cy="75" rx="15" ry="10" fill="#fff" ${S} stroke-width="3"/>
+<ellipse cx="27.5" cy="71" rx="5" ry="7" transform="rotate(30 27.5 71)" fill="${K}"/><ellipse cx="52.5" cy="71" rx="5" ry="7" transform="rotate(-30 52.5 71)" fill="${K}"/>
+<circle cx="25.5" cy="36" r="6.5" fill="${K}"/><circle cx="54.5" cy="36" r="6.5" fill="${K}"/>
+<ellipse cx="40" cy="52" rx="19" ry="17" fill="#fff" ${S} stroke-width="3"/>
+<ellipse cx="32.5" cy="50" rx="5" ry="6.5" transform="rotate(25 32.5 50)" fill="${K}"/><ellipse cx="47.5" cy="50" rx="5" ry="6.5" transform="rotate(-25 47.5 50)" fill="${K}"/>
+<circle cx="33.4" cy="49.4" r="2.3" fill="#fff"/><circle cx="46.6" cy="49.4" r="2.3" fill="#fff"/><circle cx="33.8" cy="49.9" r="1.2" fill="${K}"/><circle cx="47" cy="49.9" r="1.2" fill="${K}"/>
+<ellipse cx="40" cy="57" rx="2.8" ry="2" fill="${K}"/><path d="M37 60q1.5 2 3 0q1.5 2 3 0" fill="none" stroke="${K}" stroke-width="1.8" stroke-linecap="round"/>
+${blush(27.5,52.5,58,.85)}
+<path d="M40 35q-1-5 2-8" fill="none" stroke="${K}" stroke-width="2" stroke-linecap="round"/><path d="M42 27q6-4 9 1q-5 3-9-1z" fill="#4cb963" ${S} stroke-width="1.8"/>
+<path d="M-4 104V91q6-7 12 0t12 0 12 0 12 0 12 0 12 0 12 0V104z" fill="#4cb963" ${S} stroke-width="2.5"/>`),
+cat:sv(`${paw(13,17)}${paw(67,86)}${spark(66,22,3.5)}${spark(14,80,3.5)}
+${line2("M57 66q15 4 13-10q-1-6 5-8","#ffb067",3.6)}
+<path d="M22 44L23 23L37 33Z" fill="#ffb067" ${S} stroke-width="3"/><path d="M58 44L57 23L43 33Z" fill="#ffb067" ${S} stroke-width="3"/>
+<path d="M25.5 37.5L26 28.5L32 33.5Z" fill="#ff8fb1"/><path d="M54.5 37.5L54 28.5L48 33.5Z" fill="#ff8fb1"/>
+<ellipse cx="40" cy="52" rx="21" ry="18" fill="#ffb067" ${S} stroke-width="3"/>
+<path d="M40 35v5M35 36l1 4M45 36l-1 4" stroke="${K}" stroke-width="2" stroke-linecap="round"/>
+<ellipse cx="40" cy="59" rx="8" ry="5.5" fill="#fff7ee"/>
+${blush(28,52,57)}${eyes(32,48,50)}
+<path d="M38 55.2h4l-2 2.4z" fill="#ff6b8b" ${S} stroke-width="1.2"/><path d="M37 58.6q1.5 2 3 0q1.5 2 3 0" fill="none" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>
+<path d="M24 55h-8M24 58.5l-7 2M56 55h8M56 58.5l7 2" stroke="${K}" stroke-width="1.6" stroke-linecap="round"/>
+<ellipse cx="33" cy="71" rx="5" ry="3.6" fill="#ffb067" ${S} stroke-width="2.5"/><ellipse cx="47" cy="71" rx="5" ry="3.6" fill="#ffb067" ${S} stroke-width="2.5"/>`)
+};
+let cardTheme=(store.get("flagmem-settings")||{}).theme||"globe";
+const getBack=()=>cardBacks[cardTheme]||cardBacks.globe;
 
 const saved=store.get("flagmem-settings")||{};
 let mode=saved.mode||"flag",size=saved.size||8,region=saved.region||"all";
@@ -352,12 +462,13 @@ function newGame(){
     const face=isFlag
       ?`<span class="flagbox">${flag(k.c[0])}</span>${mode==="flag"?`<span class="cname">${esc(k.c[1])}</span>`:""}`
       :`<span class="name">${esc(k.c[1])}</span><span class="tag">수도 ${esc(k.c[3])}</span>`;
-    return `<button class="card" data-i="${i}" aria-label="뒤집힌 카드 ${i+1}"><span class="face back">${globe}</span><span class="face front${isFlag?" fc":""}">${face}</span></button>`;
+    return `<button class="card" data-i="${i}" aria-label="뒤집힌 카드 ${i+1}"><span class="face back">${getBack()}</span><span class="face front${isFlag?" fc":""}">${face}</span></button>`;
   }).join("");
   layout();
   $("overlay").classList.remove("show");
   renderFound();update();renderRank();
-  store.set("flagmem-settings",{mode,size,region});
+  store.set("flagmem-settings",{mode,size,region,theme:cardTheme});
+  document.documentElement.dataset.cardtheme=cardTheme;
 }
 function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function update(){$("moves").textContent=moves;$("time").textContent=fmt(secs);$("pairs").textContent=matched+"/"+cards.length/2;$("combo").textContent=combo;$("comboStat").classList.toggle("hot",combo>=2)}
@@ -379,7 +490,7 @@ function flip(el){
     setTimeout(()=>{
       for(const x of [a,b]){x.classList.add("done","pop");x.classList.toggle("fire",c>=3);setTimeout(()=>x.classList.remove("pop"),550)}
       sfx.match(c);
-      const cols=c>=3?["#ffd23f","#ff5a4e","#ff9f1c","#fff"]:["#3ccf6e","#ffd23f","#fff"];
+      const cols=c>=3?["#ffd23f","#ff6b6b","#ff9f43","#fff"]:["#3ccf6e","#ffd23f","#fff"];
       burst(a,c>=2?10+c*4:8,cols);burst(b,c>=2?10+c*4:8,cols);
       if(c>=2){showCombo(c);sfx.combo(c);const s=$("comboStat");s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump")}
       open=[];lock=false;matched++;foundList.push(ka.c);renderFound();update();if(matched===cards.length/2)win()},350);
@@ -392,7 +503,7 @@ function flip(el){
 }
 function win(){
   clearInterval(timer);
-  setTimeout(()=>{sfx.win();const r=$("board").getBoundingClientRect();for(let i=0;i<5;i++)setTimeout(()=>burst({getBoundingClientRect:()=>({left:r.left+Math.random()*r.width,top:r.top+Math.random()*r.height*.6,width:0,height:0})},26,["#ffd23f","#ff5a4e","#3ccf6e","#4aadd6","#fff"]),i*160)},300);
+  setTimeout(()=>{sfx.win();const r=$("board").getBoundingClientRect();for(let i=0;i<5;i++)setTimeout(()=>burst({getBoundingClientRect:()=>({left:r.left+Math.random()*r.width,top:r.top+Math.random()*r.height*.6,width:0,height:0})},26,["#ffd23f","#ff6b6b","#7ee0bd","#4cc9f0","#8b6cff","#fff"]),i*160)},300);
   const key=curKey(),rec={k:key,m:moves,s:secs,c:bestCombo,t:Date.now()};
   const mine=localTop(key);const best=mine[0]?{moves:mine[0].m,secs:mine[0].s}:null;
   const isRec=!best||better(rec,mine[0])<0;
@@ -411,6 +522,7 @@ $("board").addEventListener("click",e=>{const c=e.target.closest(".card");if(c)f
 $("modeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.v;setSeg("modeSeg",mode);newGame()});
 $("sizeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;size=+b.dataset.v;setSeg("sizeSeg",size);newGame()});
 $("region").addEventListener("change",e=>{region=e.target.value;newGame()});
+$("cardTheme").addEventListener("change",e=>{cardTheme=e.target.value;document.documentElement.dataset.cardtheme=cardTheme;newGame()});
 $("newGame").addEventListener("click",newGame);
 $("rankSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;rankView=b.dataset.v;store.set("flagmem-rankview",rankView);renderRank()});
 $("regForm").addEventListener("submit",async e=>{
@@ -430,6 +542,7 @@ $("again").addEventListener("click",newGame);
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(layout,150)});
 
 setSeg("modeSeg",mode);setSeg("sizeSeg",size);$("region").value=region;
+document.documentElement.dataset.cardtheme=cardTheme;$("cardTheme").value=cardTheme;
 newGame();
 initShared();
 if("serviceWorker" in navigator){
