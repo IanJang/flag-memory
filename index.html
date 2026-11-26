@@ -479,6 +479,7 @@ function layout(){
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 function newGame(){
+  resetPending();
   document.body.classList.add("playing");if(scrollY>0)scrollTo({top:0,behavior:"smooth"});
   clearInterval(timer);timer=null;started=false;secs=0;moves=0;matched=0;open=[];lock=false;foundList=[];combo=0;bestCombo=0;
   let pool=C.filter(c=>region==="all"||c[2]===region);
@@ -505,9 +506,19 @@ function update(){$("moves").textContent=moves;$("time").textContent=fmt(secs);$
 function renderFound(){
   $("found").innerHTML=foundList.length?foundList.map(c=>`<span class="chip">${flag(c[0])}${esc(c[1])} · ${esc(c[3])}</span>`).join(""):'<span class="empty">아직 없어요. 첫 짝을 찾아보세요!</span>';
 }
+let missT=[],missPair=null,missAt=0,queued=null,qT=0;
+function endMiss(){missT.forEach(clearTimeout);missT=[];if(missPair)for(const x of missPair){x.classList.remove("up","shake");x.setAttribute("aria-label","뒤집힌 카드 "+(+x.dataset.i+1))}missPair=null;open=[];lock=false}
+function runQueued(){clearTimeout(qT);const q=queued;queued=null;if(q&&!lock)flip(q)}
+function resetPending(){missT.forEach(clearTimeout);missT=[];missPair=null;queued=null;clearTimeout(qT)}
 function flip(el){
   const i=+el.dataset.i,k=cards[i];
-  if(lock||el.classList.contains("up")||el.classList.contains("done"))return;
+  if(el.classList.contains("up")||el.classList.contains("done"))return;
+  if(lock){
+    // 기다리는 동안 누른 카드도 버리지 않음: 틀린 두 장은 잠깐(0.4초) 보여준 뒤 바로 덮고 새 카드를 뒤집음
+    queued=el;clearTimeout(qT);
+    if(missPair){const wait=400-(Date.now()-missAt);if(wait<=0){endMiss();return runQueued()}qT=setTimeout(()=>{if(missPair)endMiss();runQueued()},wait)}
+    return;
+  }
   if(!started){started=true;timer=setInterval(()=>{secs++;update()},1000)}
  sfx.flip();
   el.classList.add("up");el.setAttribute("aria-label",k.c[1]+(k.kind==="flag"?" 국기":" 이름"));
@@ -523,11 +534,12 @@ function flip(el){
       const cols=c>=3?["#ffd23f","#ff6b6b","#ff9f43","#fff"]:["#3ccf6e","#ffd23f","#fff"];
       burst(a,c>=2?10+c*4:8,cols);burst(b,c>=2?10+c*4:8,cols);
       if(c>=2){showCombo(c);sfx.combo(c);const s=$("comboStat");s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump")}
-      open=[];lock=false;matched++;foundList.push(ka.c);renderFound();update();if(matched===cards.length/2)win()},350);
+      open=[];lock=false;matched++;foundList.push(ka.c);renderFound();update();if(matched===cards.length/2)win();else runQueued()},350);
   }else{
     combo=0;
-    setTimeout(()=>{a.classList.add("shake");b.classList.add("shake");sfx.miss();update()},450);
-    setTimeout(()=>{for(const x of [a,b]){x.classList.remove("up","shake");x.setAttribute("aria-label","뒤집힌 카드 "+(+x.dataset.i+1))}open=[];lock=false},1000);
+    missPair=[a,b];missAt=Date.now();
+    missT=[setTimeout(()=>{a.classList.add("shake");b.classList.add("shake");sfx.miss();update()},450),
+           setTimeout(()=>{endMiss();runQueued()},1000)];
   }
   update();
 }
@@ -549,11 +561,21 @@ function win(){
 }
 
 // 터치: 손가락이 조금 미끄러져도 같은 카드 위에서 떼면 뒤집기. 터치 뒤 따라오는 click은 무시
-let tDown=null,tUsed=0;
-$("board").addEventListener("pointerdown",e=>{if(e.pointerType==="mouse")return;tDown=e.target.closest(".card")});
-$("board").addEventListener("pointerup",e=>{if(e.pointerType==="mouse"||!tDown)return;const c=document.elementFromPoint(e.clientX,e.clientY)?.closest(".card");if(c===tDown){tUsed=Date.now();flip(c)}tDown=null});
-$("board").addEventListener("pointercancel",()=>{tDown=null});
-$("board").addEventListener("click",e=>{if(Date.now()-tUsed<700)return;const c=e.target.closest(".card");if(c)flip(c)});
+// 터치: 손가락이 닿는 순간 바로 뒤집기(손가락마다 따로). 카드 사이 틈을 눌러도 가장 가까운 카드로 판정
+let tUsed=0;
+function cardAt(e){
+  const c=e.target.closest&&e.target.closest(".card");if(c)return c;
+  let best=null,bd=18;
+  for(const el of $("board").children){const r=el.getBoundingClientRect(),dx=Math.max(r.left-e.clientX,0,e.clientX-r.right),dy=Math.max(r.top-e.clientY,0,e.clientY-r.bottom),d=Math.hypot(dx,dy);if(d<bd){bd=d;best=el}}
+  return best;
+}
+$("board").parentElement.addEventListener("pointerdown",e=>{
+  if(e.pointerType==="mouse"||!$("menu").hidden)return;
+  if(e.width>=70&&e.height>=70)return; // 손바닥처럼 넓게 닿은 건 무시
+  const c=cardAt(e);if(!c)return;
+  tUsed=Date.now();flip(c);
+});
+$("board").addEventListener("click",e=>{if(Date.now()-tUsed<800)return;const c=e.target.closest(".card");if(c)flip(c)});
 $("board").addEventListener("contextmenu",e=>e.preventDefault());
 $("modeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.v;setSeg("modeSeg",mode);newGame()});
 $("sizeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;size=+b.dataset.v;setSeg("sizeSeg",size);newGame()});
