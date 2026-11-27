@@ -1,4 +1,4 @@
-# 세계 국기 메모리 — 설치형 웹앱(PWA)
+# Flag Memory (세계 국기 메모리) — 설치형 웹앱(PWA)
 
 ## 1. 인터넷에 올리기 (무료, GitHub Pages)
 1. github.com에서 새 저장소(Public)를 만듭니다. 예: `flag-memory`
