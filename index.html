@@ -79,7 +79,8 @@ body.onstart{overflow:hidden}
 .dialog .btns .btn{margin:0}
 .btn.ghost{background:#fff;color:var(--ink);text-shadow:none}
 @media(prefers-reduced-motion:reduce){.hero .hg,.hero .hl,.hero .hr,.hero .hs,.st-go{animation:none}}
-.wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:clamp(12px,2.4vw,28px) max(3vw,12px) 12px}
+.wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:clamp(12px,2.4vw,28px) max(3vw,12px) 12px;height:100vh;height:100dvh;display:flex;flex-direction:column}
+header{flex:none}
 header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;grid-template-areas:"title stats rank menu";align-items:center;gap:14px;margin-bottom:20px}
 .titlebox{grid-area:title}.stats{grid-area:stats}
 .rankbtn{grid-area:rank;width:58px;height:58px;border-radius:18px;border:var(--bw) solid var(--ink);background:#fff3b0;box-shadow:var(--sh);display:grid;place-items:center;cursor:pointer;padding:0}
@@ -272,7 +273,8 @@ body.playing .board{touch-action:none}
 .dialog .regmsg{font-size:14px;min-height:1.4em;color:var(--grape)}
 @media(max-width:600px){.rank li{grid-template-columns:30px minmax(0,1fr) auto auto;gap:8px}.rank .v.c{display:none}.rank .no{width:28px;height:28px;font-size:15px}}
 .note{margin-top:18px;font-size:13px;color:var(--muted)}
-.stage{position:relative}
+.stage{position:relative;flex:1 1 0;min-height:0;display:flex;flex-direction:column;justify-content:center}
+.stage .board{width:100%}
 .combo{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);pointer-events:none;z-index:4;text-align:center;white-space:nowrap;font:400 clamp(38px,9vw,76px)/1 "Jua",sans-serif;color:var(--sun);text-shadow:var(--ol),0 6px 0 var(--ink);padding:.5em .8em;opacity:0}
 .combo::before,.combo::after{content:"";position:absolute;z-index:-1;clip-path:polygon(100% 50%,84.8% 59.3%,93.3% 75%,75.5% 75.5%,75% 93.3%,59.3% 84.8%,50% 100%,40.7% 84.8%,25% 93.3%,24.5% 75.5%,6.7% 75%,15.2% 59.3%,0 50%,15.2% 40.7%,6.7% 25%,24.5% 24.5%,25% 6.7%,40.7% 15.2%,50% 0,59.3% 15.2%,75% 6.7%,75.5% 24.5%,93.3% 25%,84.8% 40.7%)}
 .combo::before{inset:-12% -6%;background:var(--ink)}
@@ -285,7 +287,7 @@ body.playing .board{touch-action:none}
 body.shakeall .board{animation:quake .35s}
 @keyframes quake{20%{transform:translate(-4px,2px)}40%{transform:translate(4px,-2px)}60%{transform:translate(-3px,1px)}80%{transform:translate(2px,0)}}
 @media(max-width:600px){.stats{width:100%}.stat{flex:1;min-width:0;padding:5px 4px 3px}.stat b{font-size:22px}.controls{gap:10px}.seg button{padding:0 11px;font-size:15px}.tag{display:none}.clouds .c1{width:100px}.clouds .c2,.clouds .c3{display:none}
-  .wrap{padding:10px 8px 28px}
+  .wrap{padding:10px 8px 10px}
   header{gap:8px;margin-bottom:10px}
   h1{font-size:30px;text-shadow:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink),0 4px 0 var(--ink)}
   .sub{display:none}
@@ -373,7 +375,7 @@ body.shakeall .board{animation:quake .35s}
         <button class="snd" id="menuHome">🏠 처음 화면</button>
         <button class="btn" id="newGame">새 게임</button>
       </div>
-      <p class="ver">버전 <span id="buildInfo">16 · 2026-11-27 12:08 업데이트</span> <button class="upd" id="updBtn" hidden>업데이트 확인</button></p>
+      <p class="ver">버전 <span id="buildInfo">17 · 2026-11-27 12:15 업데이트</span> <button class="upd" id="updBtn" hidden>업데이트 확인</button></p>
       <p class="updmsg" id="updMsg" role="status"></p>
     </div>
   </header>
@@ -618,7 +620,8 @@ function layout(){
   const b=$("board"),n=cards.length;if(!n)return;
   const W=b.parentElement.clientWidth,gap=parseFloat(getComputedStyle(b).columnGap)||8;
   // 제목·점수판을 뺀 남은 화면 전체를 카드판으로 씀. 카드 모양(가로:세로)은 2:3~4:4.7 사이에서 남는 칸에 맞게 늘려 빈 공간을 줄임
-  const top=b.getBoundingClientRect().top,Hh=Math.max(innerHeight-top-12,200),AR_MIN=.66,AR_MAX=.85;
+  // 카드판은 남는 공간(stage) 안에서 세로 가운데 정렬
+  const Hh=Math.max(b.parentElement.clientHeight-4,200),AR_MIN=.66,AR_MAX=.85;
   let best=null;
   for(let c=2;c<=14;c++){const rows=Math.ceil(n/c),waste=rows*c-n;if(waste>Math.floor(c/3))continue;
     const cw=(W-gap*(c-1))/c,ch=(Hh-gap*(rows-1))/rows;

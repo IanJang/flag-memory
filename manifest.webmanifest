@@ -4,7 +4,7 @@
   "description": "세계 국기로 하는 짝 맞추기 메모리 게임",
   "start_url": "./",
   "scope": "./",
-  "display": "standalone",
+  "display": "fullscreen",
   "orientation": "any",
   "background_color": "#7fd4ff",
   "theme_color": "#7fd4ff",
@@ -34,5 +34,9 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "display_override": [
+    "fullscreen",
+    "standalone"
   ]
 }
