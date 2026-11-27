@@ -37,6 +37,42 @@ body{overscroll-behavior:none;-webkit-tap-highlight-color:transparent;margin:0;c
 .clouds .c3{width:120px;bottom:8%;right:-24px;animation:drift 20s ease-in-out infinite alternate}
 @keyframes drift{to{transform:translateX(26px)}}
 @media(min-width:821px){.clouds .c1{right:auto;left:42%;top:26px}}
+.start{position:fixed;inset:0;z-index:20;display:flex;overflow:auto;overscroll-behavior:contain;
+  background:radial-gradient(circle,rgba(255,255,255,.55) 1.6px,transparent 2.2px) 0 0/22px 22px,linear-gradient(180deg,var(--sky1),var(--sky2) 80%)}
+.start[hidden]{display:none}
+body.onstart{overflow:hidden}
+.start-in{margin:auto;width:min(620px,100%);padding:24px 18px 32px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.hero{width:min(300px,62vw,38vh);margin-bottom:4px}
+.hero svg{display:block;width:100%;height:auto;overflow:visible}
+.hero .hg{animation:bob 2.4s ease-in-out infinite;transform-origin:256px 400px}
+.hero .hl{animation:wigL 3s ease-in-out infinite;transform-origin:178px 320px}
+.hero .hr{animation:wigR 3s ease-in-out infinite;transform-origin:334px 320px}
+.hero .hs{animation:twinkle 1.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-14px) rotate(-3deg)}}
+@keyframes wigL{50%{transform:rotate(-5deg)}}
+@keyframes wigR{50%{transform:rotate(5deg)}}
+@keyframes twinkle{50%{opacity:.35}}
+.st-title{font:400 clamp(40px,10vw,64px)/1.1 "Jua",sans-serif;margin:0;color:#fff;text-shadow:var(--ol),0 6px 0 var(--ink),3px 6px 0 var(--ink),-3px 6px 0 var(--ink)}
+.st-title span{display:inline-block;color:var(--sun);transform:rotate(-3deg)}
+.st-sub{margin:14px 0 18px;font:400 18px "Jua",sans-serif;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:4px 14px;box-shadow:0 3px 0 var(--ink)}
+.st-levels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;width:100%}
+.st-levels button{display:flex;flex-direction:column;align-items:center;gap:1px;padding:10px 4px 9px;border:var(--bw) solid var(--ink);border-radius:20px;background:#fff;color:var(--ink);box-shadow:var(--sh);cursor:pointer;font-family:"Jua",sans-serif;transition:transform .15s}
+.st-levels i{font-style:normal;font-size:30px;line-height:1.15}
+.st-levels b{font-weight:400;font-size:21px;line-height:1.2}
+.st-levels small{font-size:14px;color:var(--muted)}
+.st-levels em{font-style:normal;font-size:12px;color:var(--grape);min-height:1.3em;margin-top:2px;white-space:nowrap}
+.st-levels button[aria-pressed=true]{background:var(--sun);transform:translateY(-4px) rotate(-2deg);box-shadow:0 7px 0 var(--ink)}
+.st-levels button:focus-visible,.st-go:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
+.st-mode{margin-top:18px}
+#startMode button[aria-pressed=true]{background:var(--mint)}
+.st-go{margin-top:22px;font-size:28px;min-height:64px;padding:0 44px;box-shadow:0 7px 0 var(--ink);animation:pulse 1.6s ease-in-out infinite}
+.st-go:active{box-shadow:0 3px 0 var(--ink)}
+@keyframes pulse{50%{transform:scale(1.05)}}
+@media(max-width:600px){.st-levels{grid-template-columns:repeat(2,minmax(0,1fr))}.st-sub{font-size:16px}}
+.dialog .btns{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;margin-top:16px}
+.dialog .btns .btn{margin:0}
+.btn.ghost{background:#fff;color:var(--ink);text-shadow:none}
+@media(prefers-reduced-motion:reduce){.hero .hg,.hero .hl,.hero .hr,.hero .hs,.st-go{animation:none}}
 .wrap{position:relative;z-index:1;max-width:1600px;margin:0 auto;padding:clamp(16px,3vw,32px) max(4vw,14px) 40px}
 header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"title stats menu";align-items:center;gap:14px;margin-bottom:20px}
 .titlebox{grid-area:title}.stats{grid-area:stats}
@@ -208,6 +244,24 @@ body.shakeall .board{animation:quake .35s}
 </style>
 </head>
 <body>
+<section class="start" id="start" aria-label="시작 화면">
+  <div class="start-in">
+    <div class="hero"><svg viewBox="40 56 432 400" aria-hidden="true"><defs><g id="stSpark"><path d="M0-20Q0 0 20 0Q0 0 0 20Q0 0-20 0Q0 0 0-20Z" fill="#fff"/></g></defs> <g class="hc hl"><g transform="translate(178 214) rotate(-14)"> <rect x="-84" y="-102" width="168" height="214" rx="26" fill="#2d2346"/> <rect x="-84" y="-112" width="168" height="214" rx="26" fill="#ff6b6b" stroke="#2d2346" stroke-width="11"/> <rect x="-64" y="-92" width="128" height="174" rx="16" fill="none" stroke="#fff" stroke-width="5" stroke-dasharray="14 10" opacity=".85"/> <path d="M-24-32Q-24-60 0-60Q26-60 26-36Q26-20 8-12Q0-7 0 8" fill="none" stroke="#2d2346" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/> <circle cx="0" cy="38" r="19" fill="#2d2346"/> <path d="M-24-32Q-24-60 0-60Q26-60 26-36Q26-20 8-12Q0-7 0 8" fill="none" stroke="#fff" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/> <circle cx="0" cy="38" r="11" fill="#fff"/> </g> </g><g class="hc hr"><g transform="translate(334 214) rotate(14)"> <rect x="-84" y="-102" width="168" height="214" rx="26" fill="#2d2346"/> <rect x="-84" y="-112" width="168" height="214" rx="26" fill="#fff" stroke="#2d2346" stroke-width="11"/> <g transform="translate(0 -38)"> <rect x="-60" y="-40" width="120" height="80" rx="6" fill="#fff" stroke="#2d2346" stroke-width="5"/> <g transform="rotate(33.69)"> <circle r="20" fill="#0047a0"/> <path d="M-20 0A20 20 0 0 1 20 0A10 10 0 0 1 0 0A10 10 0 0 0-20 0Z" fill="#cd2e3a"/> </g> <g fill="#2d2346"> <g transform="rotate(-56.31) translate(0 -36)"><rect x="-12" y="-7" width="24" height="3.6"/><rect x="-12" y="-1.8" width="24" height="3.6"/><rect x="-12" y="3.4" width="24" height="3.6"/></g> <g transform="rotate(56.31) translate(0 -36)"><rect x="-12" y="-7" width="10.8" height="3.6"/><rect x="1.2" y="-7" width="10.8" height="3.6"/><rect x="-12" y="-1.8" width="24" height="3.6"/><rect x="-12" y="3.4" width="10.8" height="3.6"/><rect x="1.2" y="3.4" width="10.8" height="3.6"/></g> <g transform="rotate(-123.69) translate(0 -36)"><rect x="-12" y="-7" width="24" height="3.6"/><rect x="-12" y="-1.8" width="10.8" height="3.6"/><rect x="1.2" y="-1.8" width="10.8" height="3.6"/><rect x="-12" y="3.4" width="24" height="3.6"/></g> <g transform="rotate(123.69) translate(0 -36)"><rect x="-12" y="-7" width="10.8" height="3.6"/><rect x="1.2" y="-7" width="10.8" height="3.6"/><rect x="-12" y="-1.8" width="10.8" height="3.6"/><rect x="1.2" y="-1.8" width="10.8" height="3.6"/><rect x="-12" y="3.4" width="10.8" height="3.6"/><rect x="1.2" y="3.4" width="10.8" height="3.6"/></g> </g> </g> <rect x="-84" y="38" width="168" height="34" fill="#ffe680"/> <path d="M-84 38H84" stroke="#2d2346" stroke-width="7"/> <rect x="-84" y="-112" width="168" height="214" rx="26" fill="none" stroke="#2d2346" stroke-width="11"/> </g> </g><g class="hs"><use href="#stSpark" transform="translate(84 96) scale(1.1)"/> <use href="#stSpark" transform="translate(436 92) scale(.85)"/> <use href="#stSpark" transform="translate(92 404) scale(.75)"/> <use href="#stSpark" transform="translate(428 410) scale(.95)"/> </g><g class="hg"><g transform="translate(256 338) scale(4.2) translate(-40 -51)"> <circle cx="40" cy="53.4" r="23" fill="#2d2346"/> <circle cx="40" cy="51" r="23" fill="#4cc9f0"/> <path d="M23 44q2-9 12-11 6 0 6 4t-6 5-7 5q-4 0-5-3z" fill="#7bd389"/> <path d="M46 57q5-3 9 0 2 3 0 7-3 3-7 1-3-5-2-8z" fill="#7bd389"/> <path d="M22 58q4 0 5 4-2 4-5 1z" fill="#7bd389"/> <path d="M50 32a19 19 0 0 1 8 7" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" opacity=".85"/> <circle cx="40" cy="51" r="23" fill="none" stroke="#2d2346" stroke-width="2.6"/> <g fill="#ff6f9c" opacity=".55"><ellipse cx="28" cy="56" rx="3.4" ry="2.1"/><ellipse cx="52" cy="56" rx="3.4" ry="2.1"/></g> <g fill="#2d2346"><ellipse cx="33" cy="50" rx="2.6" ry="3.4"/><ellipse cx="47" cy="50" rx="2.6" ry="3.4"/></g> <g fill="#fff"><circle cx="33.9" cy="48.7" r="1"/><circle cx="47.9" cy="48.7" r="1"/></g> <path d="M36.4 57Q40 61 43.6 57" fill="none" stroke="#2d2346" stroke-width="2" stroke-linecap="round"/> </g> </g></svg></div>
+    <h2 class="st-title">세계 국기 <span>메모리</span></h2>
+    <p class="st-sub">카드를 뒤집어 같은 국기를 찾아요!</p>
+    <div class="st-levels" id="startLevels" role="group" aria-label="난이도">
+      <button data-v="6" aria-pressed="false"><i>🌱</i><b>쉬움</b><small>6쌍</small><em></em></button>
+      <button data-v="8" aria-pressed="true"><i>🌿</i><b>보통</b><small>8쌍</small><em></em></button>
+      <button data-v="12" aria-pressed="false"><i>🌳</i><b>어려움</b><small>12쌍</small><em></em></button>
+      <button data-v="18" aria-pressed="false"><i>👑</i><b>달인</b><small>18쌍</small><em></em></button>
+    </div>
+    <div class="seg st-mode" id="startMode" role="group" aria-label="놀이 방법">
+      <button data-v="flag" aria-pressed="true">국기 ↔ 국기</button>
+      <button data-v="name" aria-pressed="false">국기 ↔ 나라 이름</button>
+    </div>
+    <button class="btn st-go" id="startBtn">▶ 시작하기</button>
+  </div>
+</section>
 <div class="clouds" aria-hidden="true"><svg class="c1" viewBox="-4 -4 128 66"><path d="M22 54H98a14 14 0 0 0 2-28a20 20 0 0 0-36-12a16 16 0 0 0-28 6a16 16 0 0 0-14 34Z" fill="#fff" stroke="#2d2346" stroke-width="3" stroke-linejoin="round"/><path d="M30 46h40" stroke="#c9ecff" stroke-width="3" stroke-linecap="round"/></svg><svg class="c2" viewBox="-4 -4 128 66"><path d="M22 54H98a14 14 0 0 0 2-28a20 20 0 0 0-36-12a16 16 0 0 0-28 6a16 16 0 0 0-14 34Z" fill="#fff" stroke="#2d2346" stroke-width="3" stroke-linejoin="round"/><path d="M30 46h40" stroke="#c9ecff" stroke-width="3" stroke-linecap="round"/></svg><svg class="c3" viewBox="-4 -4 128 66"><path d="M22 54H98a14 14 0 0 0 2-28a20 20 0 0 0-36-12a16 16 0 0 0-28 6a16 16 0 0 0-14 34Z" fill="#fff" stroke="#2d2346" stroke-width="3" stroke-linejoin="round"/><path d="M30 46h40" stroke="#c9ecff" stroke-width="3" stroke-linecap="round"/></svg></div>
 <div class="wrap">
   <header>
@@ -251,9 +305,10 @@ body.shakeall .board{animation:quake .35s}
         <button class="switch" id="peekBtn" role="switch" aria-checked="false" aria-labelledby="peekLab"><span class="knob"></span><span class="st"></span></button></div>
       <div class="row">
         <button class="snd" id="snd" aria-pressed="true" aria-label="효과음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M17 9l5 6M22 9l-5 6"/></svg><span class="on">소리 켬</span><span class="off">소리 끔</span></button>
+        <button class="snd" id="menuHome">🏠 처음 화면</button>
         <button class="btn" id="newGame">새 게임</button>
       </div>
-      <p class="ver">버전 <span id="buildInfo">12 · 2026-11-27 10:45 업데이트</span></p>
+      <p class="ver">버전 <span id="buildInfo">13 · 2026-11-27 11:04 업데이트</span></p>
     </div>
   </header>
 
@@ -294,7 +349,7 @@ body.shakeall .board{animation:quake .35s}
       <form class="reg" id="regForm"><input id="nick" maxlength="16" placeholder="랭킹에 올릴 이름" aria-label="랭킹에 올릴 이름" autocomplete="nickname"><button id="regBtn" type="submit">등록</button></form>
       <p class="regmsg" id="regMsg"></p>
     </div>
-    <button class="btn" id="again">한 판 더</button>
+    <div class="btns"><button class="btn ghost" id="toHome">🏠 처음 화면</button><button class="btn" id="again">한 판 더</button></div>
   </div>
 </div>
 
@@ -518,11 +573,11 @@ function newGame(){
       :`<span class="name">${esc(k.c[1])}</span><span class="tag">수도 ${esc(k.c[3])}</span>`;
     return `<button class="card" data-i="${i}" aria-label="뒤집힌 카드 ${i+1}"><span class="face back">${getBack()}</span><span class="face front${isFlag?" fc":""}">${face}</span></button>`;
   }).join("");
+  $("summary").textContent=`🎮 ${sizeName[size]} · ${regionName[region]} · ${mode==="flag"?"국기 짝":"이름 짝"}`;
   layout();
   $("overlay").classList.remove("show");
   renderFound();update();renderRank();
   saveSettings();
-  $("summary").textContent=`🎮 ${sizeName[size]} · ${regionName[region]} · ${mode==="flag"?"국기 짝":"이름 짝"}`;
   document.documentElement.dataset.cardtheme=cardTheme;
   if(peek)startPeek();
 }
@@ -660,7 +715,23 @@ let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(layout,150)
 
 setSeg("modeSeg",mode);setSeg("sizeSeg",size);$("region").value=region;
 document.documentElement.dataset.cardtheme=cardTheme;setSeg("themeSeg",cardTheme);setPeekUI();
-newGame();
+// 첫 화면: 난이도·놀이 방법을 고르고 "시작하기"로 게임 시작
+function renderStart(){
+  setSeg("startLevels",String(size));setSeg("startMode",mode);
+  for(const b of $("startLevels").children){const k=mode+"-"+b.dataset.v+"-"+region,top=localTop(k)[0];
+    b.querySelector("em").textContent=top?`최고 ${top.m}번 · ${fmt(top.s)}`:"";}
+}
+function showStart(){
+  clearInterval(timer);timer=null;resetPending();stopPeek(false);setMenu(false);$("overlay").classList.remove("show");
+  renderStart();$("start").hidden=false;document.body.classList.add("onstart");$("startBtn").focus({preventScroll:true});
+}
+$("startLevels").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;size=+b.dataset.v;setSeg("sizeSeg",String(size));renderStart();sfx.flip()});
+$("startMode").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;mode=b.dataset.v;setSeg("modeSeg",mode);renderStart();sfx.flip()});
+$("startBtn").addEventListener("click",()=>{$("start").hidden=true;document.body.classList.remove("onstart");sfx.match(1);newGame()});
+$("menuHome").addEventListener("click",showStart);
+$("toHome").addEventListener("click",showStart);
+showStart();
+if(document.fonts)document.fonts.ready.then(layout);
 initShared();
 if("serviceWorker" in navigator){
   const had=!!navigator.serviceWorker.controller;let reloaded=false;
