@@ -253,7 +253,7 @@ body.shakeall .board{animation:quake .35s}
         <button class="snd" id="snd" aria-pressed="true" aria-label="효과음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M17 9l5 6M22 9l-5 6"/></svg><span class="on">소리 켬</span><span class="off">소리 끔</span></button>
         <button class="btn" id="newGame">새 게임</button>
       </div>
-      <p class="ver">버전 <span id="buildInfo">11 · 2026-11-27 10:40 업데이트</span></p>
+      <p class="ver">버전 <span id="buildInfo">12 · 2026-11-27 10:45 업데이트</span></p>
     </div>
   </header>
 
@@ -503,7 +503,7 @@ function layout(){
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 function newGame(){
-  resetPending();stopPeek(false);
+  gameId++;resetPending();stopPeek(false);
   document.body.classList.add("playing");if(scrollY>0)scrollTo({top:0,behavior:"smooth"});
   clearInterval(timer);timer=null;started=false;secs=0;moves=0;matched=0;open=[];lock=false;foundList=[];combo=0;bestCombo=0;
   let pool=C.filter(c=>region==="all"||c[2]===region);
@@ -531,10 +531,10 @@ function update(){$("moves").textContent=moves;$("time").textContent=fmt(secs);$
 function renderFound(){
   $("found").innerHTML=foundList.length?foundList.map(c=>`<span class="chip">${flag(c[0])}${esc(c[1])} · ${esc(c[3])}</span>`).join(""):'<span class="empty">아직 없어요. 첫 짝을 찾아보세요!</span>';
 }
-let missT=[],missPair=null,missAt=0,queued=null,qT=0;
+let missT=[],missPair=null,missAt=0,queued=[],qT=0,gameId=0;
 function endMiss(){missT.forEach(clearTimeout);missT=[];if(missPair)for(const x of missPair){x.classList.remove("up","shake");x.setAttribute("aria-label","뒤집힌 카드 "+(+x.dataset.i+1))}missPair=null;open=[];lock=false}
-function runQueued(){clearTimeout(qT);const q=queued;queued=null;if(q&&!lock)flip(q)}
-function resetPending(){missT.forEach(clearTimeout);missT=[];missPair=null;queued=null;clearTimeout(qT)}
+function runQueued(){clearTimeout(qT);while(queued.length&&!lock)flip(queued.shift());if(!lock)queued.length=0}
+function resetPending(){missT.forEach(clearTimeout);missT=[];missPair=null;queued=[];clearTimeout(qT)}
 // 미리 보기: 시작할 때 모든 카드를 5초 동안 보여준 뒤 덮음(시간은 첫 카드를 뒤집을 때부터)
 function startPeek(){
   const cs=[...$("board").children];if(!cs.length)return;
@@ -555,7 +555,7 @@ function flip(el){
   if(peeking||el.classList.contains("up")||el.classList.contains("done"))return;
   if(lock){
     // 기다리는 동안 누른 카드도 버리지 않음: 틀린 두 장은 잠깐(0.4초) 보여준 뒤 바로 덮고 새 카드를 뒤집음
-    queued=el;clearTimeout(qT);
+    if(!queued.includes(el)&&queued.length<2)queued.push(el);clearTimeout(qT);
     if(missPair){const wait=400-(Date.now()-missAt);if(wait<=0){endMiss();return runQueued()}qT=setTimeout(()=>{if(missPair)endMiss();runQueued()},wait)}
     return;
   }
@@ -567,14 +567,19 @@ function flip(el){
   moves++;lock=true;
   const [a,b]=open,ka=cards[+a.dataset.i],kb=cards[+b.dataset.i];
   if(ka.c[0]===kb.c[0]){
-    combo++;bestCombo=Math.max(bestCombo,combo);const c=combo;
+    combo++;bestCombo=Math.max(bestCombo,combo);const c=combo,g=gameId;
+    // 짝 판정은 바로 끝내서 다음 카드를 곧장 누를 수 있게 하고, 효과만 뒤집힘이 끝난 뒤(0.35초) 보여줌
+    open=[];lock=false;matched++;foundList.push(ka.c);const last=matched===cards.length/2;
+    if(last)lock=true;
     setTimeout(()=>{
+      if(g!==gameId)return;
       for(const x of [a,b]){x.classList.add("done","pop");x.classList.toggle("fire",c>=3);setTimeout(()=>x.classList.remove("pop"),550)}
       sfx.match(c);
       const cols=c>=3?["#ffd23f","#ff6b6b","#ff9f43","#fff"]:["#3ccf6e","#ffd23f","#fff"];
-      burst(a,c>=2?10+c*4:8,cols);burst(b,c>=2?10+c*4:8,cols);
+      const n=Math.min(c>=2?10+c*4:8,22);burst(a,n,cols);burst(b,n,cols);
       if(c>=2){showCombo(c);sfx.combo(c);const s=$("comboStat");s.classList.remove("bump");void s.offsetWidth;s.classList.add("bump")}
-      open=[];lock=false;matched++;foundList.push(ka.c);renderFound();update();if(matched===cards.length/2)win();else runQueued()},350);
+      renderFound();update();if(last)win()},350);
+    runQueued();
   }else{
     combo=0;
     missPair=[a,b];missAt=Date.now();
