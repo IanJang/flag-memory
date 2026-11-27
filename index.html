@@ -62,6 +62,23 @@ header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto a
 .themes button[aria-pressed=true]{background:#efe9ff;box-shadow:inset 0 0 0 2.5px var(--grape)}
 .themes button[aria-pressed=true] .tn{color:var(--grape)}
 .themes button:focus-visible{outline:3px solid var(--grape);outline-offset:2px}
+.peekopt{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.peekopt .lab{margin:0 0 0 4px;color:var(--ink);font-size:16px}
+.switch{position:relative;flex:none;width:78px;height:40px;border-radius:999px;border:var(--bw) solid var(--ink);background:#e9e5f5;box-shadow:0 3px 0 var(--ink);cursor:pointer;padding:0}
+.switch .knob{position:absolute;top:3px;left:3px;width:28px;height:28px;border-radius:50%;background:#fff;border:2.5px solid var(--ink);transition:left .2s cubic-bezier(.3,1.4,.5,1)}
+.switch .st{position:absolute;top:50%;right:9px;transform:translateY(-50%);font:400 13px "Jua",sans-serif;color:var(--muted)}
+.switch .st::after{content:"끔"}
+.switch[aria-checked=true]{background:var(--mint)}
+.switch[aria-checked=true] .knob{left:41px}
+.switch[aria-checked=true] .st{right:auto;left:10px;color:var(--ink)}
+.switch[aria-checked=true] .st::after{content:"켬"}
+.switch:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
+.peek{position:absolute;left:50%;top:-6px;transform:translate(-50%,-100%);z-index:4;pointer-events:none;background:#fff;border:var(--bw) solid var(--ink);border-radius:999px;box-shadow:var(--sh);padding:4px 18px 4px 14px;font:400 20px "Jua",sans-serif;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.peek[hidden]{display:none}
+.peek b{display:inline-grid;place-items:center;min-width:34px;height:34px;border-radius:50%;background:var(--sun);border:2.5px solid var(--ink);font-weight:400}
+.peek.tick b{animation:bump .35s}
+body.peeking .board{cursor:wait}
+.ver{margin:14px 0 0;text-align:center;font-size:13px;color:var(--muted)}
 .menu .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:18px}
 @media(max-width:820px){header{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"title menu" "stats stats"}.menubtn{align-self:start}.menu{width:100%}}
 @media(max-width:600px){.hint{display:none}.themes{gap:5px}.themes button{font-size:12px;padding:3px 1px 2px}.menu{padding:12px 14px 16px}.menubtn{width:52px;height:52px}}
@@ -230,16 +247,20 @@ body.shakeall .board{animation:quake .35s}
         </select></div>
       <div class="opt"><span class="lab">카드 그림</span>
         <div class="themes" id="themeSeg" role="group" aria-label="카드 그림"></div></div>
+      <div class="opt peekopt"><span class="lab" id="peekLab">처음에 5초 동안 전체 보기</span>
+        <button class="switch" id="peekBtn" role="switch" aria-checked="false" aria-labelledby="peekLab"><span class="knob"></span><span class="st"></span></button></div>
       <div class="row">
         <button class="snd" id="snd" aria-pressed="true" aria-label="효과음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M17 9l5 6M22 9l-5 6"/></svg><span class="on">소리 켬</span><span class="off">소리 끔</span></button>
         <button class="btn" id="newGame">새 게임</button>
       </div>
+      <p class="ver">버전 <span id="buildInfo">11 · 2026-11-27 10:40 업데이트</span></p>
     </div>
   </header>
 
   <div class="stage">
     <div class="board" id="board" aria-label="게임 보드"></div>
     <div class="combo" id="comboPop" aria-live="polite"></div>
+    <div class="peek" id="peekBadge" aria-live="polite" hidden></div>
   </div>
 
   <section class="found">
@@ -361,6 +382,8 @@ ${blush(28,52,57)}${eyes(32,48,50)}
 <ellipse cx="33" cy="71" rx="5" ry="3.6" fill="#ffb067" ${S} stroke-width="2.5"/><ellipse cx="47" cy="71" rx="5" ry="3.6" fill="#ffb067" ${S} stroke-width="2.5"/>`)
 };
 let cardTheme=(store.get("flagmem-settings")||{}).theme||"globe";
+let peek=!!(store.get("flagmem-settings")||{}).peek,peeking=false,peekT=null;
+function saveSettings(){store.set("flagmem-settings",{mode,size,region,theme:cardTheme,peek})}
 const getBack=()=>cardBacks[cardTheme]||cardBacks.globe;
 
 const saved=store.get("flagmem-settings")||{};
@@ -480,7 +503,7 @@ function layout(){
 function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
 
 function newGame(){
-  resetPending();
+  resetPending();stopPeek(false);
   document.body.classList.add("playing");if(scrollY>0)scrollTo({top:0,behavior:"smooth"});
   clearInterval(timer);timer=null;started=false;secs=0;moves=0;matched=0;open=[];lock=false;foundList=[];combo=0;bestCombo=0;
   let pool=C.filter(c=>region==="all"||c[2]===region);
@@ -498,9 +521,10 @@ function newGame(){
   layout();
   $("overlay").classList.remove("show");
   renderFound();update();renderRank();
-  store.set("flagmem-settings",{mode,size,region,theme:cardTheme});
+  saveSettings();
   $("summary").textContent=`🎮 ${sizeName[size]} · ${regionName[region]} · ${mode==="flag"?"국기 짝":"이름 짝"}`;
   document.documentElement.dataset.cardtheme=cardTheme;
+  if(peek)startPeek();
 }
 function fmt(s){return Math.floor(s/60)+":"+String(s%60).padStart(2,"0")}
 function update(){$("moves").textContent=moves;$("time").textContent=fmt(secs);$("pairs").textContent=matched+"/"+cards.length/2;$("combo").textContent=combo;$("comboStat").classList.toggle("hot",combo>=2)}
@@ -511,9 +535,24 @@ let missT=[],missPair=null,missAt=0,queued=null,qT=0;
 function endMiss(){missT.forEach(clearTimeout);missT=[];if(missPair)for(const x of missPair){x.classList.remove("up","shake");x.setAttribute("aria-label","뒤집힌 카드 "+(+x.dataset.i+1))}missPair=null;open=[];lock=false}
 function runQueued(){clearTimeout(qT);const q=queued;queued=null;if(q&&!lock)flip(q)}
 function resetPending(){missT.forEach(clearTimeout);missT=[];missPair=null;queued=null;clearTimeout(qT)}
+// 미리 보기: 시작할 때 모든 카드를 5초 동안 보여준 뒤 덮음(시간은 첫 카드를 뒤집을 때부터)
+function startPeek(){
+  const cs=[...$("board").children];if(!cs.length)return;
+  peeking=true;lock=true;document.body.classList.add("peeking");
+  cs.forEach(c=>c.classList.add("up"));sfx.flip();
+  let n=5;const bd=$("peekBadge");bd.hidden=false;
+  const show=()=>{bd.innerHTML=`👀 잘 기억해요! <b>${n}</b>`;bd.classList.remove("tick");void bd.offsetWidth;bd.classList.add("tick")};show();
+  peekT=setInterval(()=>{n--;if(n<=0)stopPeek(true);else show()},1000);
+}
+function stopPeek(flipBack){
+  clearInterval(peekT);peekT=null;$("peekBadge").hidden=true;
+  if(!peeking)return;
+  peeking=false;lock=false;document.body.classList.remove("peeking");
+  if(flipBack){$("board").querySelectorAll(".card.up:not(.done)").forEach(c=>c.classList.remove("up"));sfx.flip()}
+}
 function flip(el){
   const i=+el.dataset.i,k=cards[i];
-  if(el.classList.contains("up")||el.classList.contains("done"))return;
+  if(peeking||el.classList.contains("up")||el.classList.contains("done"))return;
   if(lock){
     // 기다리는 동안 누른 카드도 버리지 않음: 틀린 두 장은 잠깐(0.4초) 보여준 뒤 바로 덮고 새 카드를 뒤집음
     queued=el;clearTimeout(qT);
@@ -586,13 +625,17 @@ $("themeSeg").innerHTML=Object.keys(themeNames).map(t=>`<button data-v="${t}" ar
 $("themeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cardTheme=b.dataset.v;setSeg("themeSeg",cardTheme);document.documentElement.dataset.cardtheme=cardTheme;
   // 그림만 바꾸고 하던 게임은 그대로 유지
   const svg=getBack();document.querySelectorAll("#board .back").forEach(x=>x.innerHTML=svg);
-  store.set("flagmem-settings",{mode,size,region,theme:cardTheme})});
+  saveSettings()});
 const menu=$("menu"),mb=$("menuBtn");
 function setMenu(o){menu.hidden=!o;mb.setAttribute("aria-expanded",String(o));mb.setAttribute("aria-label",o?"설정 닫기":"설정 열기")}
 mb.addEventListener("click",()=>setMenu(menu.hidden));
 document.addEventListener("click",e=>{if(!menu.hidden&&!menu.contains(e.target)&&!mb.contains(e.target)){setMenu(false);e.stopPropagation();e.preventDefault()}},true);
 addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){setMenu(false);mb.focus()}});
 $("newGame").addEventListener("click",()=>{setMenu(false);newGame()});
+function setPeekUI(){$("peekBtn").setAttribute("aria-checked",String(peek))}
+$("peekBtn").addEventListener("click",()=>{peek=!peek;setPeekUI();saveSettings();
+  // 아직 카드를 하나도 안 뒤집은 판이면 바로 적용
+  if(peek&&!started&&!peeking&&!open.length&&!matched)startPeek();else if(!peek&&peeking)stopPeek(true)});
 $("rankSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;rankView=b.dataset.v;store.set("flagmem-rankview",rankView);renderRank()});
 $("regForm").addEventListener("submit",async e=>{
   e.preventDefault();if(!lastRec||!shared.db)return;
@@ -611,7 +654,7 @@ $("again").addEventListener("click",newGame);
 let rt;addEventListener("resize",()=>{clearTimeout(rt);rt=setTimeout(layout,150)});
 
 setSeg("modeSeg",mode);setSeg("sizeSeg",size);$("region").value=region;
-document.documentElement.dataset.cardtheme=cardTheme;setSeg("themeSeg",cardTheme);
+document.documentElement.dataset.cardtheme=cardTheme;setSeg("themeSeg",cardTheme);setPeekUI();
 newGame();
 initShared();
 if("serviceWorker" in navigator){
