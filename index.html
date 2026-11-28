@@ -28,6 +28,10 @@ LAYOUT: 제목과 점수 스티커, 설정 줄, 보드, 찾은 나라, 랭킹; 6
 --ol2:2px 0 var(--ink),-2px 0 var(--ink),0 2px var(--ink),0 -2px var(--ink),1.5px 1.5px var(--ink),-1.5px 1.5px var(--ink),1.5px -1.5px var(--ink),-1.5px -1.5px var(--ink)}
 *{box-sizing:border-box;min-width:0}
 html{touch-action:manipulation;overscroll-behavior:none;-webkit-text-size-adjust:100%;height:100%;overflow:hidden}
+/* 글자 선택·길게 눌러 메뉴·그림 끌기 막기(닉네임 입력칸은 예외) */
+html,body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+img,svg,a{-webkit-user-drag:none}
 body{height:100%;overflow:hidden;overscroll-behavior:none;-webkit-tap-highlight-color:transparent;margin:0;color:var(--ink);font:16px/1.5 "Gowun Dodum",system-ui,sans-serif;min-height:100vh;overflow-x:clip;
   background:radial-gradient(circle,rgba(255,255,255,.55) 1.6px,transparent 2.2px) 0 0/22px 22px fixed,linear-gradient(180deg,var(--sky1),var(--sky2) 75%) fixed}
 .clouds{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -426,7 +430,7 @@ body.shakeall .board{animation:quake .35s}
         <button class="snd" id="menuHome">🏠 처음 화면</button>
         <button class="btn" id="newGame">새 게임</button>
       </div>
-      <p class="ver">버전 <span id="buildInfo">21 · 2026-11-28 18:22 업데이트</span> <button class="upd" id="updBtn" hidden>업데이트 확인</button></p>
+      <p class="ver">버전 <span id="buildInfo">22 · 2026-11-28 20:58 업데이트</span> <button class="upd" id="updBtn" hidden>업데이트 확인</button></p>
       <p class="updmsg" id="updMsg" role="status"></p>
       </div>
       <div class="mbar" aria-hidden="true"><i></i></div>
@@ -918,6 +922,8 @@ if(document.querySelector('link[rel="manifest"]')){
     ub.disabled=false;
   });
 }
+addEventListener("dragstart",e=>{if(!e.target.closest||!e.target.closest("input,textarea"))e.preventDefault()});
+addEventListener("selectstart",e=>{if(!e.target.closest||!e.target.closest("input,textarea"))e.preventDefault()});
 showStart();
 if(document.fonts)document.fonts.ready.then(layout);
 initShared();
