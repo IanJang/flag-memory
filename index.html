@@ -65,6 +65,11 @@ body.onstart{overflow:hidden}
 .st-levels button:focus-visible,.st-go:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
 .st-mode{margin-top:18px}
 #startMode button[aria-pressed=true]{background:var(--mint)}
+#startMode,#modeSeg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+#startMode button,#modeSeg button{padding:0 6px;white-space:nowrap}
+#sizeSeg{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}
+@media(max-width:380px){#startMode button,#modeSeg button{font-size:13px;padding:0 3px}.menu #sizeSeg button{padding:0 2px;font-size:14px}}
+#sizeSeg button{white-space:nowrap}
 .st-go{margin-top:22px;font-size:28px;min-height:64px;padding:0 44px;box-shadow:0 7px 0 var(--ink);animation:pulse 1.6s ease-in-out infinite}
 .st-go:active{box-shadow:0 3px 0 var(--ink)}
 @keyframes pulse{50%{transform:scale(1.05)}}
@@ -103,7 +108,19 @@ header{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto a
 .menubtn:focus-visible{outline:3px solid var(--grape);outline-offset:3px}
 .menu{position:absolute;top:calc(100% + 12px);right:0;z-index:8;width:min(440px,100%);background:#fff;border:var(--bw) solid var(--ink);border-radius:24px;box-shadow:0 6px 0 var(--ink);padding:14px 18px 18px;transform-origin:top right;animation:menuin .28s cubic-bezier(.2,1.4,.4,1)}
 .menu[hidden]{display:none}
-.menu{overflow:auto;overscroll-behavior:contain}
+.menu{padding:0;display:flex;flex-direction:column}
+.menu-in{overflow:auto;overscroll-behavior:contain;padding:14px 18px 18px;border-radius:21px;scrollbar-width:none;min-height:0;flex:1 1 auto}
+.menu-in::-webkit-scrollbar{display:none}
+.mbar{position:absolute;top:16px;bottom:16px;right:4px;width:8px;border-radius:99px;background:rgba(45,35,70,.13);display:none;pointer-events:none}
+.mbar i{position:absolute;left:0;right:0;top:0;border-radius:99px;background:var(--grape);border:1.5px solid var(--ink)}
+.menu.scrolly .mbar{display:block}
+.menu.scrolly .menu-in{padding-right:22px}
+.menu::after{content:"";position:absolute;left:3px;right:3px;bottom:3px;height:56px;border-radius:0 0 21px 21px;background:linear-gradient(rgba(255,255,255,0),#fff 85%);pointer-events:none;opacity:0;transition:opacity .2s}
+.menu.scrolly:not(.atbottom)::after{opacity:1}
+.mmore{position:absolute;left:50%;bottom:10px;transform:translateX(-50%);z-index:2;width:40px;height:40px;border-radius:50%;border:2.5px solid var(--ink);background:var(--grape);color:#fff;display:none;place-items:center;padding:0;cursor:pointer;box-shadow:0 3px 0 var(--ink);animation:nudge 1.4s ease-in-out infinite}
+.mmore svg{width:22px;height:22px}
+.menu.scrolly:not(.atbottom) .mmore{display:grid}
+@keyframes nudge{50%{transform:translateX(-50%) translateY(4px)}}
 .menu::before{content:"";position:absolute;right:20px;top:-10px;width:16px;height:16px;background:#fff;border-left:var(--bw) solid var(--ink);border-top:var(--bw) solid var(--ink);transform:rotate(45deg)}
 @keyframes menuin{0%{transform:scale(.7);opacity:0}100%{transform:none;opacity:1}}
 .menu h2{font:400 24px "Jua",sans-serif;margin:0 0 2px}
@@ -161,6 +178,14 @@ body.peeking .board{cursor:wait}
 .pend[data-state=ask] .later,.pend[data-state=later] .ask,.pend[data-state=later] #pendLater{display:none}
 .pend[data-state=later]{display:flex;align-items:center;justify-content:space-between;gap:8px;background:#e8f8ef}
 .pend[data-state=later] p{margin:0}
+.grp{margin-top:12px;border:2.5px dashed #c9bff0;border-radius:18px;padding:4px 12px 14px}
+.grp-next{background:#f6f3ff}
+.grp-now{background:#ecfbf3;border-color:#a8e3c4}
+.sub2{display:block;font-size:12px;color:var(--muted)}
+.themes .tn{white-space:nowrap}
+.grp .themes{gap:6px}
+.grp-h{margin:8px 0 0;font:400 17px "Jua",sans-serif;color:var(--ink)}
+.grp .opt:first-of-type{margin-top:8px}
 .ver{margin:14px 0 0;text-align:center;font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 10px}
 .upd{border:2px solid var(--ink);background:#fff;color:var(--ink);border-radius:999px;font:400 13px "Jua",sans-serif;padding:3px 12px;cursor:pointer;box-shadow:0 2px 0 var(--ink)}
 .upd[data-ready]{background:var(--coral);color:#fff;font-size:15px;padding:5px 16px}
@@ -170,7 +195,7 @@ body.peeking .board{cursor:wait}
 .updmsg:empty{display:none}
 .menu .row{display:flex;flex-wrap:wrap;gap:10px;justify-content:space-between;align-items:center;margin-top:18px}
 @media(max-width:820px) and (orientation:portrait){header{grid-template-columns:minmax(0,1fr) auto auto;grid-template-areas:"title rank menu" "stats stats stats"}.menubtn,.rankbtn{align-self:start}.menu{width:100%}}
-@media(max-width:600px){.rankbtn{width:46px;height:46px;border-radius:15px}.rankbtn svg{width:26px;height:26px}.rank .rlv button{padding:0 9px;font-size:14px}.hint{display:none}.themes{gap:5px}.themes button{font-size:12px;padding:3px 1px 2px}.menu{padding:12px 14px 16px}.menubtn{width:52px;height:52px}}
+@media(max-width:600px){.grp{padding:2px 9px 12px}.grp .themes{gap:4px}.themes .tn{font-size:12px;padding:0 3px}.rankbtn{width:46px;height:46px;border-radius:15px}.rankbtn svg{width:26px;height:26px}.rank .rlv button{padding:0 9px;font-size:14px}.hint{display:none}.themes{gap:5px}.themes button{font-size:12px;padding:3px 1px 2px}.menu{padding:12px 14px 16px}.menubtn{width:52px;height:52px}}
 h1{font:400 clamp(36px,6.4vw,60px)/1.1 "Jua",sans-serif;margin:0;color:#fff;letter-spacing:.01em;text-shadow:var(--ol),0 6px 0 var(--ink),3px 6px 0 var(--ink),-3px 6px 0 var(--ink);text-wrap:balance}
 h1 span{display:inline-block;color:var(--sun);transform:rotate(-3deg)}
 .sub{position:relative;display:inline-block;margin:14px 0 0;background:#fff;border:2.5px solid var(--ink);border-radius:14px;padding:4px 12px;font-size:15px;box-shadow:0 3px 0 var(--ink)}
@@ -226,7 +251,11 @@ body.playing .board{touch-action:none}
 .fl svg{display:block;width:100%;height:auto;border-radius:4px;box-shadow:0 0 0 max(1.5px,.12em) var(--ink)}
 .cname{width:100%;background:#ffe680;border-top:max(2px,.16em) solid var(--ink);padding:.38em .25em .42em;font:400 max(10px,1.02em)/1.15 "Jua",sans-serif;text-align:center;word-break:keep-all;overflow-wrap:anywhere;letter-spacing:-.01em;color:var(--ink)}
 .front:not(.fc){background:#fff8e0}
-.name{padding:0 .2em;font:400 max(13px,1.2em)/1.15 "Jua",sans-serif;text-align:center;word-break:keep-all}
+.cap{font-size:max(18px,1.6em);line-height:1;margin-bottom:.15em}
+.front:has(.cap){background:#e9f4ff}
+.name{padding:0 .2em;font:400 max(13px,1.2em)/1.15 "Jua",sans-serif;text-align:center;word-break:keep-all;overflow-wrap:anywhere;max-width:100%}
+.name.long{font-size:max(12px,1em)}
+.name.xlong{font-size:max(11px,.84em)}
 .tag{font-size:max(11px,.75em);color:var(--muted);text-align:center;line-height:1.2}
 .card.done{cursor:default}
 .card.done .front{background:#d4f8e1}
@@ -327,7 +356,8 @@ body.shakeall .board{animation:quake .35s}
     </div>
     <div class="seg st-mode" id="startMode" role="group" aria-label="놀이 방법">
       <button data-v="flag" aria-pressed="true">국기 ↔ 국기</button>
-      <button data-v="name" aria-pressed="false">국기 ↔ 나라 이름</button>
+      <button data-v="name" aria-pressed="false">국기 ↔ 이름</button>
+      <button data-v="capital" aria-pressed="false">국기 ↔ 수도</button>
     </div>
     <button class="btn st-go" id="startBtn">▶ 시작하기</button>
   </div>
@@ -348,11 +378,15 @@ body.shakeall .board{animation:quake .35s}
     <button class="rankbtn" id="rankBtn" aria-haspopup="dialog" aria-label="랭킹 보기"><svg viewBox="0 0 80 80" aria-hidden="true"><path d="M18 20H8q0 18 16 20M62 20h10q0 18-16 20" fill="none" stroke="#2d2346" stroke-width="6" stroke-linecap="round"/><path d="M18 10H62V28Q62 50 40 52Q18 50 18 28Z" fill="#ffd23f" stroke="#2d2346" stroke-width="6" stroke-linejoin="round"/><rect x="34" y="52" width="12" height="10" fill="#ffb703" stroke="#2d2346" stroke-width="6"/><rect x="22" y="62" width="36" height="12" rx="4" fill="#ff6b6b" stroke="#2d2346" stroke-width="6"/></svg></button>
     <button class="menubtn" id="menuBtn" aria-expanded="false" aria-controls="menu" aria-label="설정 열기"><svg viewBox="0 0 24 24" aria-hidden="true"><g class="bars" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></g><g class="x" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></g></svg></button>
     <div class="menu" id="menu" hidden>
+      <div class="menu-in" id="menuIn">
       <h2>설정</h2>
+      <section class="grp grp-next" aria-labelledby="gNext">
+        <h3 class="grp-h" id="gNext">🕹️ 새 게임부터 적용</h3>
       <div class="opt"><span class="lab">놀이 방법</span>
         <div class="seg" id="modeSeg" role="group" aria-label="모드">
           <button data-v="flag" aria-pressed="true">국기 ↔ 국기</button>
-          <button data-v="name" aria-pressed="false">국기 ↔ 나라 이름</button>
+          <button data-v="name" aria-pressed="false">국기 ↔ 이름</button>
+          <button data-v="capital" aria-pressed="false">국기 ↔ 수도</button>
         </div></div>
       <div class="opt"><span class="lab">난이도</span>
         <div class="seg" id="sizeSeg" role="group" aria-label="난이도">
@@ -370,24 +404,33 @@ body.shakeall .board{animation:quake .35s}
           <option value="af">아프리카·중동</option>
           <option value="oc">오세아니아·섬나라</option>
         </select></div>
+      <div class="opt peekopt"><span class="lab" id="peekLab">처음에 5초 동안 전체 보기</span>
+        <button class="switch" id="peekBtn" role="switch" aria-checked="false" aria-labelledby="peekLab"><span class="knob"></span><span class="st"></span></button></div>
       <div class="pend" id="pendBar" data-state="ask" hidden role="status">
         <p class="ask">바뀐 설정은 새 게임부터 적용돼요.<br>지금 하던 게임은 어떻게 할까요?</p>
         <p class="later">⏭️ 다음 판부터 적용돼요.</p>
         <div class="pbtns"><button class="btn" id="pendNow">지금 새 게임</button><button class="snd" id="pendLater">다음 판부터</button></div>
       </div>
+      </section>
+      <section class="grp grp-now" aria-labelledby="gNow">
+        <h3 class="grp-h" id="gNow">⚡ 바로 적용</h3>
       <div class="opt"><span class="lab">카드 그림</span>
         <div class="themes" id="themeSeg" role="group" aria-label="카드 그림"></div></div>
-      <div class="opt peekopt"><span class="lab" id="peekLab">처음에 5초 동안 전체 보기</span>
-        <button class="switch" id="peekBtn" role="switch" aria-checked="false" aria-labelledby="peekLab"><span class="knob"></span><span class="st"></span></button></div>
-      <div class="opt peekopt" id="fsOpt" hidden><span class="lab" id="fsLab">전체 화면 (아래 버튼 영역 숨기기)</span>
-        <button class="switch" id="fsBtn" role="switch" aria-checked="true" aria-labelledby="fsLab"><span class="knob"></span><span class="st"></span></button></div>
-      <div class="row">
+      <div class="opt peekopt"><span class="lab">효과음</span>
         <button class="snd" id="snd" aria-pressed="true" aria-label="효과음"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9h4l5-4v14l-5-4H4z" fill="currentColor"/><path class="on" d="M16.5 8.5a5 5 0 0 1 0 7M19 6a8.5 8.5 0 0 1 0 12"/><path class="off" d="M17 9l5 6M22 9l-5 6"/></svg><span class="on">소리 켬</span><span class="off">소리 끔</span></button>
+      </div>
+      <div class="opt peekopt" id="fsOpt" hidden><span class="lab" id="fsLab">전체 화면<small class="sub2">아래 버튼 영역 숨기기</small></span>
+        <button class="switch" id="fsBtn" role="switch" aria-checked="true" aria-labelledby="fsLab"><span class="knob"></span><span class="st"></span></button></div>
+      </section>
+      <div class="row">
         <button class="snd" id="menuHome">🏠 처음 화면</button>
         <button class="btn" id="newGame">새 게임</button>
       </div>
-      <p class="ver">버전 <span id="buildInfo">18 · 2026-11-27 13:45 업데이트</span> <button class="upd" id="updBtn" hidden>업데이트 확인</button></p>
+      <p class="ver">버전 <span id="buildInfo">19 · 2026-11-28 16:26 업데이트</span> <button class="upd" id="updBtn" hidden>업데이트 확인</button></p>
       <p class="updmsg" id="updMsg" role="status"></p>
+      </div>
+      <div class="mbar" aria-hidden="true"><i></i></div>
+      <button class="mmore" id="menuMore" tabindex="-1" aria-label="아래로 더 보기"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
     </div>
   </header>
 
@@ -544,8 +587,9 @@ function sharedTop(k){
   return rows.sort(better).slice(0,10);
 }
 let rankSize=null;
+const modeName={flag:"국기 ↔ 국기",name:"국기 ↔ 나라 이름",capital:"국기 ↔ 수도"},modeShort={flag:"국기 짝",name:"이름 짝",capital:"수도 짝"};
 function renderRank(){
-  const rs=rankSize||size,k=mode+"-"+rs+"-"+region;setSeg("rankLevels",String(rs));$("rankCur").textContent=`${sizeName[rs]} · ${mode==="flag"?"국기 ↔ 국기":"국기 ↔ 나라 이름"} · ${regionName[region]} — 시도가 적을수록, 같으면 시간이 짧을수록 높아요.`;
+  const rs=rankSize||size,k=mode+"-"+rs+"-"+region;setSeg("rankLevels",String(rs));$("rankCur").textContent=`${sizeName[rs]} · ${modeName[mode]||modeName.flag} · ${regionName[region]} — 시도가 적을수록, 같으면 시간이 짧을수록 높아요.`;
   for(const b of $("rankSeg").querySelectorAll("button"))b.setAttribute("aria-pressed",String(b.dataset.v===rankView));
   const all=rankView==="all"&&shared.ok;let rows,msg="";
   if(all){rows=sharedTop(k);if(!shared.loaded)msg=shared.err||"랭킹을 불러오는 중…"}else rows=localTop(k);
@@ -653,16 +697,18 @@ function newGame(){
   let pool=C.filter(c=>region==="all"||c[2]===region);
   const n=Math.min(size,pool.length);
   const pick=shuffle(pool.slice()).slice(0,n);
-  cards=shuffle(pick.flatMap(c=>[{c,kind:"flag"},{c,kind:mode==="name"?"name":"flag"}]));
+  cards=shuffle(pick.flatMap(c=>[{c,kind:"flag"},{c,kind:mode==="flag"?"flag":mode}]));
   const b=$("board");
   b.innerHTML=cards.map((k,i)=>{
     const isFlag=k.kind==="flag";
     const face=isFlag
-      ?`<span class="flagbox">${flag(k.c[0])}</span>${mode==="flag"?`<span class="cname">${esc(k.c[1])}</span>`:""}`
-      :`<span class="name">${esc(k.c[1])}</span><span class="tag">수도 ${esc(k.c[3])}</span>`;
+      ?`<span class="flagbox">${flag(k.c[0])}</span>${mode!=="name"?`<span class="cname">${esc(k.c[1])}</span>`:""}`
+      :k.kind==="capital"
+        ?`<span class="cap" aria-hidden="true">🏛️</span><span class="name${k.c[3].length>=7?" xlong":k.c[3].length>=5?" long":""}">${esc(k.c[3])}</span><span class="tag">수도</span>`
+        :`<span class="name">${esc(k.c[1])}</span><span class="tag">수도 ${esc(k.c[3])}</span>`;
     return `<button class="card" data-i="${i}" aria-label="뒤집힌 카드 ${i+1}"><span class="face back">${getBack()}</span><span class="face front${isFlag?" fc":""}">${face}</span></button>`;
   }).join("");
-  $("summary").textContent=`🎮 ${sizeName[size]} · ${regionName[region]} · ${mode==="flag"?"국기 짝":"이름 짝"}`;
+  $("summary").textContent=`🎮 ${sizeName[size]} · ${regionName[region]} · ${modeShort[mode]||modeShort.flag}`;
   layout();
   $("overlay").classList.remove("show");
   renderFound();update();renderRank();
@@ -704,7 +750,7 @@ function flip(el){
   }
   if(!started){started=true;timer=setInterval(()=>{secs++;update()},1000)}
  sfx.flip();
-  el.classList.add("up");el.setAttribute("aria-label",k.c[1]+(k.kind==="flag"?" 국기":" 이름"));
+  el.classList.add("up");el.setAttribute("aria-label",k.kind==="capital"?k.c[1]+"의 수도 "+k.c[3]:k.c[1]+(k.kind==="flag"?" 국기":" 이름"));
   open.push(el);
   if(open.length<2)return;
   moves++;lock=true;
@@ -772,13 +818,13 @@ function changeSetting(k,v){
   next[k]=v;syncMenuSegs();saveSettings();
   if(!inProgress()){newGame();return}
   const diff=next.mode!==mode||next.size!==size||next.region!==region||next.peek!==peek,pb=$("pendBar");
-  pb.hidden=!diff;pb.dataset.state="ask";
+  pb.hidden=!diff;pb.dataset.state="ask";requestAnimationFrame(updBar);
 }
 $("modeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b)changeSetting("mode",b.dataset.v)});
 $("sizeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(b)changeSetting("size",+b.dataset.v)});
 $("region").addEventListener("change",e=>changeSetting("region",e.target.value));
 $("pendNow").addEventListener("click",()=>{goFull();setMenu(false);newGame()});
-$("pendLater").addEventListener("click",()=>{$("pendBar").dataset.state="later"});
+$("pendLater").addEventListener("click",()=>{$("pendBar").dataset.state="later";requestAnimationFrame(updBar)});
 const themeNames={globe:"지구",web:"거미",ocean:"물고기",star:"별",bamboo:"판다",cat:"고양이"};
 $("themeSeg").innerHTML=Object.keys(themeNames).map(t=>`<button data-v="${t}" aria-pressed="false" aria-label="${themeNames[t]} 친구"><span class="mini" data-cardtheme="${t}"><span class="face back">${cardBacks[t]}</span></span><span class="tn">${themeNames[t]}</span></button>`).join("");
 $("themeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;cardTheme=b.dataset.v;setSeg("themeSeg",cardTheme);document.documentElement.dataset.cardtheme=cardTheme;
@@ -786,7 +832,18 @@ $("themeSeg").addEventListener("click",e=>{const b=e.target.closest("button");if
   const svg=getBack();document.querySelectorAll("#board .back").forEach(x=>x.innerHTML=svg);
   saveSettings()});
 const menu=$("menu"),mb=$("menuBtn");
-function setMenu(o){menu.hidden=!o;if(o){menu.style.maxHeight="";const t=menu.getBoundingClientRect().top;menu.style.maxHeight=Math.max(200,innerHeight-t-10)+"px"}mb.setAttribute("aria-expanded",String(o));mb.setAttribute("aria-label",o?"설정 닫기":"설정 열기")}
+// 메뉴 스크롤 표시: 오른쪽 보라 막대 + 아래에 더 있으면 흐림과 ⌄ 버튼
+const menuIn=$("menuIn"),mThumb=menu.querySelector(".mbar i");
+function updBar(){
+  const el=menuIn,sc=el.scrollHeight>el.clientHeight+2;menu.classList.toggle("scrolly",sc);if(!sc)return;
+  const track=menu.querySelector(".mbar").clientHeight,h=Math.max(30,track*el.clientHeight/el.scrollHeight),max=el.scrollHeight-el.clientHeight;
+  mThumb.style.height=h+"px";mThumb.style.transform=`translateY(${(track-h)*(el.scrollTop/max)}px)`;
+  menu.classList.toggle("atbottom",el.scrollTop>=max-4);
+}
+menuIn.addEventListener("scroll",updBar,{passive:true});
+addEventListener("resize",()=>{if(!menu.hidden)setMenu(true)});
+$("menuMore").addEventListener("click",()=>menuIn.scrollBy({top:menuIn.clientHeight*.7,behavior:"smooth"}));
+function setMenu(o){menu.hidden=!o;if(o){menu.style.maxHeight="";const t=menu.getBoundingClientRect().top;menu.style.maxHeight=Math.max(200,innerHeight-t-10)+"px";requestAnimationFrame(updBar)}mb.setAttribute("aria-expanded",String(o));mb.setAttribute("aria-label",o?"설정 닫기":"설정 열기")}
 mb.addEventListener("click",()=>setMenu(menu.hidden));
 document.addEventListener("click",e=>{if(!menu.hidden&&!menu.contains(e.target)&&!mb.contains(e.target)){setMenu(false);e.stopPropagation();e.preventDefault()}},true);
 addEventListener("keydown",e=>{if(e.key==="Escape"&&!menu.hidden){setMenu(false);mb.focus()}});
